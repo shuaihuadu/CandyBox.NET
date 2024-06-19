@@ -85,17 +85,18 @@ public static class IEnumerableExtensions
     /// <returns>The converted datatable.</returns>
     public static DataTable ToDataTable<T>(this IEnumerable<T> collection) where T : class
     {
-        if (collection.IsNullOrEmpty())
-        {
-            throw new ArgumentNullException(nameof(collection), "The collection to convert can not be null or empty.");
-        }
+        collection.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(nameof(collection));
 
         Type entityType = typeof(T);
+
         DataTable dataTable = entityType.GetSchema();
+
         PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(entityType);
+
         foreach (T item in collection)
         {
             DataRow row = dataTable.NewRow();
+
             foreach (PropertyDescriptor prop in properties)
             {
                 if (dataTable.Columns.Contains(prop.Name))

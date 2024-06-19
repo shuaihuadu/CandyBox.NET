@@ -18,4 +18,73 @@ public static class BooleanExtensions
     {
         return value ? trueString : falseString;
     }
+
+    /// <summary>
+    /// Determines if the <paramref name="value"/> is true then throws the <see cref="ArgumentException"/>.
+    /// </summary>
+    /// <param name="value">The bool value.</param>
+    /// <param name="parameterName">Exception to throw</param>
+    /// <returns>The object.</returns>
+    public static void ThrowArgumentExceptionIfTrue(this bool value, string parameterName)
+    {
+        ThrowIfTrue(value, new ArgumentException(parameterName));
+    }
+
+    /// <summary>
+    /// Determines if the <paramref name="value"/> is true then throws the <see cref="ArgumentNullException"/>.
+    /// </summary>
+    /// <param name="value">The bool value.</param>
+    /// <param name="parameterName">Exception to throw</param>
+    /// <returns>The object.</returns>
+    public static void ThrowArgumentNullExceptionIfTrue(this bool value, string parameterName)
+    {
+        ThrowIfTrue(value, new ArgumentNullException(parameterName));
+    }
+
+    /// <summary>
+    /// Determines if the <paramref name="value"/> is false then throws the <see cref="ArgumentException"/>.
+    /// </summary>
+    /// <param name="value">The bool value.</param>
+    /// <param name="parameterName">Exception to throw</param>
+    /// <returns>The object.</returns>
+    public static void ThrowArgumentExceptionIfFalse(this bool value, string parameterName)
+    {
+        ThrowArgumentExceptionIfTrue(!value, parameterName);
+    }
+
+    /// <summary>
+    /// Determines if the <paramref name="value"/> is false then throws the <see cref="ArgumentNullException"/>.
+    /// </summary>
+    /// <param name="value">The bool value.</param>
+    /// <param name="parameterName">Exception to throw</param>
+    /// <returns>The object.</returns>
+    public static void ThrowArgumentNullExceptionIfFalse(this bool value, string parameterName)
+    {
+        ThrowArgumentNullExceptionIfTrue(!value, parameterName);
+    }
+
+    /// <summary>
+    /// Determines if the <paramref name="value"/> is true then throws the <paramref name="exception"/>.
+    /// </summary>
+    /// <param name="value">The bool value.</param>
+    /// <param name="exception">Exception to throw</param>
+    /// <returns>The object.</returns>
+    public static void ThrowIfTrue(this bool value, Exception exception)
+    {
+        if (value)
+        {
+            throw exception;
+        }
+    }
+
+    /// <summary>
+    /// Determines if the <paramref name="value"/> is false and throws the <paramref name="exception"/>.
+    /// </summary>
+    /// <param name="value">The bool value.</param>
+    /// <param name="exception">Exception to throw</param>
+    /// <returns>The object.</returns>
+    public static void ThrowIfFlase(this bool value, Exception exception)
+    {
+        ThrowIfTrue(!value, exception);
+    }
 }

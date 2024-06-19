@@ -96,7 +96,7 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// Withes the specified action.
+    /// With the specified action.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="obj">The object.</param>
@@ -217,21 +217,22 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// Hiddens the field value.
+    /// Hiddens the value of the specified properties.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="obj">The object.</param>
     /// <param name="isReverse">If true reverse the fileds in <typeparamref name="T"/>.</param>
     /// <param name="fileds">The fileds.</param>
     /// <returns></returns>
-    public static T HiddenFieldValue<T>(this T obj, bool isReverse = false, params string[] fileds) where T : class
+    public static T HiddenPropertiesValue<T>(this T obj, bool isReverse = false, params string[] fileds) where T : class
     {
         if (obj.IsNull())
         {
             return obj;
         }
 
-        var properties = obj.GetType().GetProperties();
+        PropertyInfo[] properties = obj.GetType().GetProperties();
+
         foreach (PropertyInfo? property in properties)
         {
             bool showOrHidden = isReverse ? (!fileds.Contains(property.Name)) : fileds.Contains(property.Name);
@@ -247,29 +248,29 @@ public static class ObjectExtensions
     /// <summary>
     /// Safe the trim string properties of specified <paramref name="obj"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the object for trim.</typeparam>
     /// <param name="obj">The object.</param>
-    /// <param name="fields">The fields for trim.</param>
+    /// <param name="properties">The properties for trim.</param>
     /// <returns></returns>
-    public static T SafeTrimStringProperties<T>(this T obj, params string[] fields) where T : class
+    public static T SafeTrimStringProperties<T>(this T obj, params string[] properties) where T : class
     {
         if (obj.IsNull())
         {
             return obj;
         }
 
-        PropertyInfo[] properties = [];
+        PropertyInfo[] innerProperties = [];
 
-        if (fields.IsNotNullOrEmpty())
+        if (properties.IsNotNullOrEmpty())
         {
-            properties = obj.GetType().GetProperties().Where(p => fields.Contains(p.Name) && p.PropertyType.Name == nameof(String)).EmptyIfNull().ToArray();
+            innerProperties = obj.GetType().GetProperties().Where(p => properties.Contains(p.Name) && p.PropertyType.Name == nameof(String)).EmptyIfNull().ToArray();
         }
         else
         {
-            properties = obj.GetType().GetProperties().Where(p => p.PropertyType.Name == nameof(String)).EmptyIfNull().ToArray();
+            innerProperties = obj.GetType().GetProperties().Where(p => p.PropertyType.Name == nameof(String)).EmptyIfNull().ToArray();
         }
 
-        foreach (PropertyInfo? property in properties)
+        foreach (PropertyInfo? property in innerProperties)
         {
             if (property.IsNotNull() && property.CanWrite && property.PropertyType.Name == nameof(String))
             {
@@ -284,6 +285,23 @@ public static class ObjectExtensions
                     property.SetValue(obj, string.Empty, null);
                 }
             }
+        }
+
+        return obj;
+    }
+
+    /// <summary>
+    /// Determines if the <paramref name="predicate"/> is true, then throws the <paramref name="exception"/>.
+    /// </summary>
+    /// <param name="obj">The object.</param>
+    /// <param name="predicate">The predication.</param>
+    /// <param name="exception">Exception to throw</param>
+    /// <returns>The object.</returns>
+    public static T ThrowIfTrue<T>(this T obj, Predicate<T> predicate, Exception exception) where T : class
+    {
+        if (predicate(obj))
+        {
+            throw exception;
         }
 
         return obj;
