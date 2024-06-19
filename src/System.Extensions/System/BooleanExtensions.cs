@@ -1,4 +1,6 @@
-﻿namespace System;
+﻿// Copyright (c) IdeaTech. All rights reserved.
+
+namespace System;
 
 /// <summary>
 /// The <see cref="bool"/> extensions.

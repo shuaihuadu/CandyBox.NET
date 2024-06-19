@@ -1,4 +1,6 @@
-﻿namespace System;
+﻿// Copyright (c) IdeaTech. All rights reserved.
+
+namespace System;
 
 /// <summary>
 /// Common extensions of <see cref="float"/>.
