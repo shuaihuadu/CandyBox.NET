@@ -36,7 +36,8 @@ public static class DataTableExtensions
         {
             for (int j = 0; j < dataTable.Columns.Count; j++)
             {
-                markdownTableBuilder.Append($"|{dataTable.Rows[i][j]?.ToString()}");
+                markdownTableBuilder.Append('|');
+                markdownTableBuilder.Append(dataTable.Rows[i][j].ToString());
             }
 
             markdownTableBuilder.Append('|');
