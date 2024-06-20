@@ -1,6 +1,6 @@
 ﻿// Copyright (c) IdeaTech. All rights reserved.
 
-namespace System.Extensions.UnitTests;
+namespace System.Extensions.UnitTests.System;
 
 [TestClass]
 public class BooleanExtensionsTests

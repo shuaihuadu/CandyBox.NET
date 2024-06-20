@@ -21,10 +21,12 @@ public static class StringExtensions
         (char)0x1d, (char)0x1e, (char)0x1f, (char)0x7f, (char)0x85, (char)0x2028, (char)0x2029
     ];
 
+    #region IsXXXXXX
+
     /// <summary>
-    /// Indicates whether the specified string is null or an System.String.Empty string(Include all non visible characters).
+    /// Indicates whether the specified string is null or an System.String.Empty string(Include all invisible  characters).
     /// <param name="value">The string to test.</param>
-    /// <returns>true if the value parameter is null or an empty string (""); otherwise, false.</returns>
+    /// <returns>true if the value parameter is null or an empty string ("") or whitespace; otherwise, false.</returns>
     /// </summary>
     public static bool IsNullOrBlank(this string value)
     {
@@ -42,58 +44,13 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Indicates whether the specified string is null or an System.String.Empty string(Include all non visible characters).
+    /// Indicates whether the specified string is null or an System.String.Empty string(Include all invisible  characters).
     /// <param name="value">The string to test.</param>
     /// <returns>true if the value parameter is not null or not an empty string (""); otherwise, false.</returns>
     /// </summary>
     public static bool IsNotNullOrBlank(this string value)
     {
         return !IsNullOrBlank(value);
-    }
-
-    /// <summary>
-    /// Removes all non visible characters from the current System.String object.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <returns>
-    /// The string that remains after all non visible characters are removed from the
-    /// start and end of the current string. If no characters can be trimmed from the
-    /// current instance, the method returns the current instance unchanged.
-    ///</returns>
-    public static string TrimAll(this string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return string.Empty;
-        }
-
-        string result = TrimBlank(value);
-
-        foreach (char item in invisiableCharacters)
-        {
-            result = result.Replace(new string([item]), string.Empty);
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Removes all leading and trailing non visible characters from the current System.String object.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <returns>
-    /// The string that remains after all non visible characters are removed from the
-    /// start and end of the current string. If no characters can be trimmed from the
-    /// current instance, the method returns the current instance unchanged.
-    ///</returns>
-    public static string TrimBlank(this string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return string.Empty;
-        }
-
-        return value.Trim(invisiableCharacters);
     }
 
     /// <summary>
@@ -152,67 +109,14 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Trim the System.String without an <see cref="NullReferenceException"/>.
-    /// Please refer to <see cref="string.Trim()"/>
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="trimChars">An array of Unicode characters to remove, or null.</param>
-    /// <returns>The trimed string</returns>
-    public static string SafeTrim(this string value, params char[] trimChars)
-    {
-        if (value == null)
-        {
-            return string.Empty;
-        }
-
-        return value.Trim(trimChars);
-    }
-
-    /// <summary>
-    /// Reverse the specified string.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <returns>The reversed string</returns>
-    public static string Reverse(this string value)
-    {
-        if (value.IsNullOrBlank())
-        {
-            return string.Empty;
-        }
-
-        char[] array = value.ToCharArray();
-        Array.Reverse(array);
-
-        return new string(array);
-    }
-
-    /// <summary>
-    /// Truncate the specified string to the specified length.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="length">The length of remained.</param>
-    /// <param name="cutOffReplacement">The replacement of the removed part of the <see cref="string"/>.</param>
-    /// <returns>The string truncated.</returns>
-    public static string Truncate(this string value, int length, string cutOffReplacement = " ...")
-    {
-        if (string.IsNullOrEmpty(value) || value.Length <= length)
-        {
-            return value;
-        }
-
-        return $"{value.Remove(length)}{cutOffReplacement}";
-    }
-
-    /// <summary>
     /// Indicates whether the specified string is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
     /// </summary>
     /// <param name="value">The string to test.</param>
     /// <param name="minLength">The min length for validate.</param>
     /// <param name="maxLength">The max length for validate.</param>
-    /// <param name="trim">true to trim the non visiable characters; otherwise, false.</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>true if the value is valid length;otherwise, false.</returns>
-    public static bool IsValidLength(this string value, int minLength, int maxLength, bool trim = false)
+    public static bool IsValidLength(this string value, int minLength, int maxLength)
     {
         if (minLength < 0)
         {
@@ -234,11 +138,6 @@ public static class StringExtensions
             throw new ArgumentException("value can not be null.");
         }
 
-        if (trim)
-        {
-            value = value.Trim().TrimBlank();
-        }
-
         return value.Length >= minLength && value.Length <= maxLength;
     }
 
@@ -248,10 +147,9 @@ public static class StringExtensions
     /// <param name="value">The string to test.</param>
     /// <param name="min">The min bytes count.</param>
     /// <param name="max">The max bytes count.</param>
-    /// <param name="trim">true to trim the non visiable characters; otherwise, false.</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>true if the value is valid byte count;otherwise, false.</returns>
-    public static bool IsValidByteCount(this string value, int min, int max, bool trim = false)
+    public static bool IsValidByteCount(this string value, int min, int max)
     {
         if (min < 0)
         {
@@ -273,11 +171,6 @@ public static class StringExtensions
             throw new ArgumentException("value can not be null.");
         }
 
-        if (trim)
-        {
-            value = value.Trim().TrimBlank();
-        }
-
         int count = Text.Encoding.Default.GetByteCount(value);
 
         return count >= min && count <= max;
@@ -292,281 +185,13 @@ public static class StringExtensions
     public static bool IsGuid(this string value, string format = "D")
     {
         string[] formats = ["D", "d", "N", "n", "P", "p", "B", "b", "X", "x"];
-        try
-        {
-            if (!formats.Contains(format))
-            {
-                format = formats[0];
-            }
-
-            Guid.ParseExact(value, format);
-
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="byte"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="default">The default value while the convert faild.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="byte"/> value.If the specified string is not a byte value,returns the <paramref name="default"/>.</returns>
-    public static byte ToByte(this string value, byte @default = 0)
-    {
-        try
-        {
-            return value.ToByte();
-        }
-        catch
-        {
-            return @default;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="short"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="default">The default value while the convert faild.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="short"/> value.If the specified string is not a <see cref="short"/> value,returns the <paramref name="default"/>.</returns>
-    public static short ToInt16(this string value, short @default)
-    {
-        try
-        {
-            return value.ToInt16();
-        }
-        catch
-        {
-            return @default;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to an <see cref="int"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="default">The default value while the convert faild.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="int"/> value.If the specified string is not a <see cref="int"/> value,returns the <paramref name="default"/>.</returns>
-    public static int ToInt32(this string value, int @default = 0)
-    {
-        try
-        {
-            return value.ToInt32();
-        }
-        catch
-        {
-            return @default;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="long"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="default">The default value while the convert faild.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="long"/> value.If the specified string is not a <see cref="long"/> value,returns the <paramref name="default"/>.</returns>
-    public static long ToInt64(this string value, long @default = 0)
-    {
-        try
-        {
-            return value.ToInt64();
-        }
-        catch
-        {
-            return @default;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="byte"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="byte"/> value.</returns>
-    public static byte ToByte(this string value)
-    {
-        if (!value.IsNullOrBlank() && byte.TryParse(value, out byte result))
-        {
-            return result;
-        }
-
-        throw new ArgumentException("The specified string is not a byte value.");
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="short"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="short"/> value.</returns>
-    public static short ToInt16(this string value)
-    {
-        if (!value.IsNullOrBlank() && short.TryParse(value, out short result))
-        {
-            return result;
-        }
-
-        throw new ArgumentException("The specified string is not a short value.");
-    }
-
-    /// <summary>
-    /// Convert specified string to an <see cref="int"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="int"/> value.</returns>
-    public static int ToInt32(this string value)
-    {
-        if (!value.IsNullOrBlank() && int.TryParse(value, out int result))
-        {
-            return result;
-        }
-
-        throw new ArgumentException("The specified string is not an int value.");
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="long"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="long"/> value.</returns>
-    public static long ToInt64(this string value)
-    {
-        if (!value.IsNullOrBlank() && long.TryParse(value, out long result))
-        {
-            return result;
-        }
-
-        throw new ArgumentException("The specified string is not a long value.");
-    }
-
-    /// <summary>
-    /// Convert specified string to an <see cref="Enum"/> value.
-    /// </summary>
-    /// <typeparam name="T">The type of enum.</typeparam>
-    /// <param name="value">The string to test.</param>
-    /// <param name="ignoreCase">true to ignore case during the comparison; otherwise, false.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="Enum"/> value.</returns>
-    public static T ToEnum<T>(this string value, bool ignoreCase = true)
-    {
-        if (value.IsNullOrBlank())
-        {
-            throw new ArgumentException("Must specify valid information for parsing in the string.", nameof(value));
-        }
-
-        Type t = typeof(T);
-
-        if (!t.IsEnum)
-        {
-            throw new ArgumentException("Type provided must be an Enum.", "T");
-        }
-
-        return (T)Enum.Parse(t, value, ignoreCase);
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="DateTime"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="DateTime"/> value.</returns>
-    public static DateTime ToDateTime(this string value)
-    {
-        if (!value.IsNullOrBlank() && DateTime.TryParse(value, out DateTime result))
-        {
-            return result;
-        }
-
-        throw new ArgumentException("The specified string is not an DateTime value.");
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="Guid"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="format">GUID format type.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="Guid"/> value.</returns>
-    public static Guid ToGuid(this string value, string format = "D")
-    {
-        string[] formats = ["D", "d", "N", "n", "P", "p", "B", "b", "X", "x"];
 
         if (!formats.Contains(format))
         {
             format = formats[0];
         }
 
-        if (IsGuid(value, format))
-        {
-            return Guid.ParseExact(value, format);
-        }
-
-        throw new ArgumentException("Input string is not a valid GUID format.");
-    }
-
-    /// <summary>
-    /// Return the specified string with first character upper status.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    public static string FirstCharToUpper(this string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
-
-        if (value.Length > 1)
-        {
-            return char.ToUpper(value[0], CultureInfo.CurrentCulture) + value.Substring(1);
-        }
-
-        return value.ToUpper(CultureInfo.CurrentCulture);
-    }
-
-    /// <summary>
-    /// Replaces the all special sharacters in <paramref name="value"/> with <paramref name="replacement"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="replacement">The replacement.</param>
-    /// <returns></returns>
-    public static string ReplaceSpecialSharacters(this string value, char replacement = char.MinValue)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
-
-        char[] chars = new char[value.Length];
-
-        for (int i = 0; i < value.Length; i++)
-        {
-            if (!value[i].IsLetterOrDigit())
-            {
-                chars[i] = replacement;
-            }
-            else
-            {
-                chars[i] = value[i];
-            }
-        }
-
-        if (replacement == char.MinValue)
-        {
-            return new string(chars.Where(x => x != replacement).ToArray());
-        }
-
-        return new string(chars);
+        return Guid.TryParse(value, out Guid guid);
     }
 
     /// <summary>
@@ -746,96 +371,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Gets the full chinese phonetic alphabet.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    public static string GetFullChinesePhoneticAlphabet(this string value) => PinYinHelper.Get(value);
-
-    /// <summary>
-    /// Gets the html decode string of <paramref name="value"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    public static string HtmlDecode(this string value)
-    {
-        if (value.IsNullOrBlank())
-        {
-            return string.Empty;
-        }
-
-        return HttpUtility.HtmlDecode(value);
-    }
-
-    /// <summary>
-    /// Gets the html encode string of <paramref name="value"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    public static string HtmlEncode(this string value)
-    {
-        if (value.IsNullOrBlank())
-        {
-            return string.Empty;
-        }
-
-        return HttpUtility.HtmlEncode(value);
-    }
-
-    /// <summary>
-    /// URLs the decode.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    public static string UrlDecode(this string value)
-    {
-        if (value.IsNullOrBlank())
-        {
-            return string.Empty;
-        }
-
-        return HttpUtility.UrlDecode(value);
-    }
-
-    /// <summary>
-    /// URLs the encode.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    public static string UrlEncode(this string value)
-    {
-        if (value.IsNullOrBlank())
-        {
-            return string.Empty;
-        }
-
-        return HttpUtility.UrlEncode(value);
-    }
-
-    /// <summary>
-    /// 去除字符串中的空格，并返回骆驼命名法的格式
-    /// </summary>
-    /// <param name="value">需要转换的字符串</param>
-    /// <returns></returns>
-    public static string TrimSpaceAndToCamelCase(this string value)
-    {
-        if (value.IsNullOrBlank())
-        {
-            return string.Empty;
-        }
-
-        List<string> strs = [];
-
-        foreach (string item in value.ReplaceSpecialSharacters(' ').Split(' '))
-        {
-            strs.Add(item.FirstCharToUpper());
-        }
-
-        return string.Concat([.. strs]);
-    }
-
-    /// <summary>
-    /// 判断指定的字符串是否是合法的<see cref="DateTime"/>.
+    /// Determines whether the <paramref name="value"/> is a valid date time.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -854,6 +390,326 @@ public static class StringExtensions
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Determines whether this instance is letter.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified value is letter; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsLetter(this string value)
+    {
+        return Regex.IsMatch(value, "^[a-zA-Z]+$");
+    }
+
+    /// <summary>
+    /// Determines whether a given string is a valid Base64-encoded string.
+    /// </summary>
+    /// <param name="value">The string to check.</param>
+    /// <returns>True if the string is Base64-encoded; otherwise, false.</returns>
+    public static bool IsBase64String(string value)
+    {
+        try
+        {
+            Convert.FromBase64String(value);
+
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+    }
+
+    #endregion
+
+    #region ToXXXXXX
+
+    /// <summary>
+    /// Removes all invisible characters from the current System.String object.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <returns>
+    /// The string that remains after all invisible  characters are removed from the
+    /// start and end of the current string. If no characters can be trimmed from the
+    /// current instance, the method returns the current instance unchanged.
+    ///</returns>
+    public static string TrimAll(this string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        string result = TrimBlank(value);
+
+        foreach (char item in invisiableCharacters)
+        {
+            result = result.Replace(new string([item]), string.Empty);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Removes all leading and trailing invisible  characters from the current System.String object.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <returns>
+    /// The string that remains after all invisible  characters are removed from the
+    /// start and end of the current string. If no characters can be trimmed from the
+    /// current instance, the method returns the current instance unchanged.
+    ///</returns>
+    public static string TrimBlank(this string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return value.Trim(invisiableCharacters);
+    }
+
+    /// <summary>
+    /// Reverse the specified string.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <returns>The reversed string</returns>
+    public static string Reverse(this string value)
+    {
+        if (value.IsNullOrBlank())
+        {
+            return string.Empty;
+        }
+
+        char[] array = value.ToCharArray();
+        Array.Reverse(array);
+
+        return new string(array);
+    }
+
+    /// <summary>
+    /// Truncate the specified string to the specified length.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <param name="length">The length of remained.</param>
+    /// <param name="cutOffReplacement">The replacement of the removed part of the <see cref="string"/>.</param>
+    /// <returns>The string truncated.</returns>
+    public static string Truncate(this string value, int length, string cutOffReplacement = " ...")
+    {
+        if (string.IsNullOrEmpty(value) || value.Length <= length)
+        {
+            return value;
+        }
+
+        return $"{value.Remove(length)}{cutOffReplacement}";
+    }
+
+    /// <summary>
+    /// Convert specified string to a <see cref="byte"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <param name="default">The default value while the convert faild.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="byte"/> value.If the specified string is not a byte value,returns the <paramref name="default"/>.</returns>
+    public static byte ToByte(this string value, byte @default = 0)
+    {
+        try
+        {
+            return value.ToByte();
+        }
+        catch (ArgumentException)
+        {
+            return @default;
+        }
+    }
+
+    /// <summary>
+    /// Convert specified string to a <see cref="short"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <param name="default">The default value while the convert faild.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="short"/> value.If the specified string is not a <see cref="short"/> value,returns the <paramref name="default"/>.</returns>
+    public static short ToInt16(this string value, short @default)
+    {
+        try
+        {
+            return value.ToInt16();
+        }
+        catch (ArgumentException)
+        {
+            return @default;
+        }
+    }
+
+    /// <summary>
+    /// Convert specified string to an <see cref="int"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <param name="default">The default value while the convert faild.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="int"/> value.If the specified string is not a <see cref="int"/> value,returns the <paramref name="default"/>.</returns>
+    public static int ToInt32(this string value, int @default = 0)
+    {
+        try
+        {
+            return value.ToInt32();
+        }
+        catch (ArgumentException)
+        {
+            return @default;
+        }
+    }
+
+    /// <summary>
+    /// Convert specified string to a <see cref="long"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <param name="default">The default value while the convert faild.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="long"/> value.If the specified string is not a <see cref="long"/> value,returns the <paramref name="default"/>.</returns>
+    public static long ToInt64(this string value, long @default = 0)
+    {
+        try
+        {
+            return value.ToInt64();
+        }
+        catch (ArgumentException)
+        {
+            return @default;
+        }
+    }
+
+    /// <summary>
+    /// Convert specified string to a <see cref="byte"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="byte"/> value.</returns>
+    public static byte ToByte(this string value)
+    {
+        if (!value.IsNullOrBlank() && byte.TryParse(value, out byte result))
+        {
+            return result;
+        }
+
+        throw new ArgumentException("The specified string is not a byte value.");
+    }
+
+    /// <summary>
+    /// Convert specified string to a <see cref="short"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="short"/> value.</returns>
+    public static short ToInt16(this string value)
+    {
+        if (!value.IsNullOrBlank() && short.TryParse(value, out short result))
+        {
+            return result;
+        }
+
+        throw new ArgumentException("The specified string is not a short value.");
+    }
+
+    /// <summary>
+    /// Convert specified string to an <see cref="int"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="int"/> value.</returns>
+    public static int ToInt32(this string value)
+    {
+        if (!value.IsNullOrBlank() && int.TryParse(value, out int result))
+        {
+            return result;
+        }
+
+        throw new ArgumentException("The specified string is not an int value.");
+    }
+
+    /// <summary>
+    /// Convert specified string to a <see cref="long"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="long"/> value.</returns>
+    public static long ToInt64(this string value)
+    {
+        if (!value.IsNullOrBlank() && long.TryParse(value, out long result))
+        {
+            return result;
+        }
+
+        throw new ArgumentException("The specified string is not a long value.");
+    }
+
+    /// <summary>
+    /// Convert specified string to an <see cref="Enum"/> value.
+    /// </summary>
+    /// <typeparam name="T">The type of enum.</typeparam>
+    /// <param name="value">The string to test.</param>
+    /// <param name="ignoreCase">true to ignore case during the comparison; otherwise, false.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="Enum"/> value.</returns>
+    public static T ToEnum<T>(this string value, bool ignoreCase = true)
+    {
+        if (value.IsNullOrBlank())
+        {
+            throw new ArgumentException("Must specify valid information for parsing in the string.", nameof(value));
+        }
+
+        Type t = typeof(T);
+
+        if (!t.IsEnum)
+        {
+            throw new ArgumentException("Type provided must be an Enum.", "T");
+        }
+
+        return (T)Enum.Parse(t, value, ignoreCase);
+    }
+
+    /// <summary>
+    /// Convert specified string to a <see cref="DateTime"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="DateTime"/> value.</returns>
+    public static DateTime ToDateTime(this string value)
+    {
+        if (!value.IsNullOrBlank() && DateTime.TryParse(value, out DateTime result))
+        {
+            return result;
+        }
+
+        throw new ArgumentException("The specified string is not an DateTime value.");
+    }
+
+    /// <summary>
+    /// Convert specified string to a <see cref="Guid"/> value.
+    /// </summary>
+    /// <param name="value">The string to test.</param>
+    /// <param name="format">GUID format type.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The converted <see cref="Guid"/> value.</returns>
+    public static Guid ToGuid(this string value, string format = "D")
+    {
+        string[] formats = ["D", "d", "N", "n", "P", "p", "B", "b", "X", "x"];
+
+        if (!formats.Contains(format))
+        {
+            format = formats[0];
+        }
+
+        if (IsGuid(value, format))
+        {
+            return Guid.ParseExact(value, format);
+        }
+
+        throw new ArgumentException("Input string is not a valid GUID format.");
     }
 
     /// <summary>
@@ -892,7 +748,7 @@ public static class StringExtensions
         {
             return date.ToDateTime();
         }
-        catch
+        catch (ArgumentException)
         {
             return defaultValue;
         }
@@ -935,34 +791,28 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// To the decimal.
+    /// Conver the <paramref name="value"/> to decimal.
     /// </summary>
     /// <param name="value">The value.</param>
+    /// <param name="defaultValue">If specified string is not decimal,then return the default value.</param>
     /// <returns></returns>
-    public static decimal ToDecimal(this string value)
+    public static decimal? ToDecimal(this string value, decimal? defaultValue = null)
     {
         if (value.IsNullOrBlank())
         {
-            return default;
+            return null;
         }
 
-        try
+        if (decimal.TryParse(value, out decimal result))
         {
-            if (decimal.TryParse(value, out decimal result))
-            {
-                return result;
-            }
+            return result;
+        }
 
-            return default;
-        }
-        catch
-        {
-            return default;
-        }
+        return defaultValue;
     }
 
     /// <summary>
-    /// To the ut f8.
+    /// Set the <paramref name="value"/> to the utf-8 encoding.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns></returns>
@@ -976,69 +826,178 @@ public static class StringExtensions
         return Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(value));
     }
 
+    #endregion
+
     /// <summary>
-    /// Trims the space and upper every word.
+    /// Return the specified string with first character upper status.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns></returns>
-    public static string TrimSpaceAndUpperEveryWord(this string value)
+    public static string FirstCharToUpper(this string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
+        if (value.Length > 1)
+        {
+            return char.ToUpper(value[0], CultureInfo.CurrentCulture) + value.Substring(1);
+        }
+
+        return value.ToUpper(CultureInfo.CurrentCulture);
+    }
+
+    /// <summary>
+    /// Replaces the all special sharacters in <paramref name="value"/> with <paramref name="replacement"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="replacement">The replacement.</param>
+    /// <returns></returns>
+    public static string ReplaceSpecialSharacters(this string value, char replacement = char.MinValue)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
+        char[] chars = new char[value.Length];
+
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (!value[i].IsLetterOrDigit())
+            {
+                chars[i] = replacement;
+            }
+            else
+            {
+                chars[i] = value[i];
+            }
+        }
+
+        if (replacement == char.MinValue)
+        {
+            return new string(chars.Where(x => x != replacement).ToArray());
+        }
+
+        return new string(chars);
+    }
+
+    /// <summary>
+    /// Gets the full chinese phonetic alphabet.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns></returns>
+    public static string GetFullChinesePhoneticAlphabet(this string value) => PinYinHelper.Get(value);
+
+    /// <summary>
+    /// Gets the html decode string of <paramref name="value"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns></returns>
+    public static string HtmlDecode(this string value)
     {
         if (value.IsNullOrBlank())
         {
             return string.Empty;
         }
 
-        List<string> strs = [];
+        return HttpUtility.HtmlDecode(value);
+    }
 
-        foreach (string item in value.ReplaceSpecialSharacters(' ').Split(' '))
+    /// <summary>
+    /// Gets the html encode string of <paramref name="value"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns></returns>
+    public static string HtmlEncode(this string value)
+    {
+        if (value.IsNullOrBlank())
         {
-            strs.Add(item.FirstCharToUpper());
+            return string.Empty;
         }
 
-        return string.Concat([.. strs]);
+        return HttpUtility.HtmlEncode(value);
     }
 
     /// <summary>
-    /// Determines whether this instance is letter.
+    /// Decodes a  URL string.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>
-    ///   <c>true</c> if the specified value is letter; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool IsLetter(this string value)
-    {
-        return Regex.IsMatch(value, "^[a-zA-Z]+$");
-    }
-
-    /// <summary>
-    /// Trims the start of the <paramref name="value"/> without <see cref="NullReferenceException"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="trimChars">The trim chars.</param>
     /// <returns></returns>
-    public static string SafeTrimStart(this string value, params char[] trimChars)
+    public static string UrlDecode(this string value)
     {
-        return value.SafeTrim().TrimStart(trimChars);
+        if (value.IsNullOrBlank())
+        {
+            return string.Empty;
+        }
+
+        return HttpUtility.UrlDecode(value);
     }
 
     /// <summary>
-    /// Trims the end of the <paramref name="value"/> without <see cref="NullReferenceException"/>.
+    /// Encodes a  URL string.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <param name="trimChars">The trim chars.</param>
     /// <returns></returns>
-    public static string SafeTrimEnd(this string value, params char[] trimChars)
+    public static string UrlEncode(this string value)
     {
-        return value.SafeTrim().TrimEnd(trimChars);
+        if (value.IsNullOrBlank())
+        {
+            return string.Empty;
+        }
+
+        return HttpUtility.UrlEncode(value);
     }
 
     /// <summary>
-    /// Minify the specified <paramref name="value"/> if it is a json string.
+    /// Remove all new line chars in the <paramref name="value"/>, include \r \n.
     /// </summary>
-    /// <param name="value">The json string</param>
-    /// <returns>The minified json string</returns>
-    public static string MinifyJsonString(this string value)
+    /// <param name="value">需要转换的字符串</param>
+    /// <returns></returns>
+    public static string RemoveNewLines(this string value)
     {
-        return Regex.Replace(value.SafeTrim(), "(\"(?:[^\"\\\\]|\\\\.)*\")|\\s+", "$1");
+        if (value.IsNullOrBlank())
+        {
+            return string.Empty;
+        }
+
+        return value.Replace("\r\n", string.Empty).Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(Environment.NewLine, string.Empty);
+    }
+
+    /// <summary>
+    /// Decodes a Base64 encoded string to its original string representation using a specified encoding.
+    /// </summary>
+    /// <param name="base64String">The Base64 encoded string to decode.</param>
+    /// <param name="encoding">The encoding to use for the decoded string. If null, use UTF8.</param>
+    /// <returns>The decoded string.</returns>
+    public static string Base64Decode(this string base64String, Encoding? encoding = null)
+    {
+        base64String.IsNullOrBlank().ThrowArgumentNullExceptionIfTrue(nameof(base64String));
+
+        encoding ??= Encoding.UTF8;
+
+        byte[] decodedBytes = Convert.FromBase64String(base64String);
+
+        string decodedString = encoding.GetString(decodedBytes);
+
+        return decodedString;
+    }
+
+    /// <summary>
+    /// Encodes a given string to a Base64 string.
+    /// </summary>
+    /// <param name="value">The input string to be encoded.</param>
+    /// <param name="encoding">The encoding to use for the decoded string. If null, use UTF8.</param>
+    /// <returns>The Base64 encoded string.</returns>
+    public static string Base64Encode(string value, Encoding? encoding = null)
+    {
+        value.IsNullOrBlank().ThrowArgumentNullExceptionIfTrue(nameof(value));
+
+        encoding ??= Encoding.UTF8;
+
+        byte[] bytes = Encoding.UTF8.GetBytes(value);
+
+        return Convert.ToBase64String(bytes);
     }
 }

@@ -278,7 +278,7 @@ public static class ObjectExtensions
 
                 if (value is not null)
                 {
-                    property.SetValue(obj, value.ToString()?.SafeTrim(), null);
+                    property.SetValue(obj, value.ToString()?.Trim(), null);
                 }
                 else
                 {
