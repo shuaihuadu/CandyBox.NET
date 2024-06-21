@@ -7,6 +7,8 @@ namespace System;
 /// </summary>
 public static class ObjectExtensions
 {
+    #region IsXXXXXX
+
     /// <summary>
     /// Indicates whether the specified object is null.
     /// </summary>
@@ -48,6 +50,44 @@ public static class ObjectExtensions
     {
         return !(obj.Is<T>());
     }
+
+    #endregion
+
+    #region Throw
+
+    /// <summary>
+    /// Throws if argument is null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj">The object.</param>
+    /// <param name="parameterName">Name of the parameter.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static void ThrowIfArgumentIsNull<T>(this T obj, string parameterName) where T : class
+    {
+        if (obj == null)
+        {
+            throw new ArgumentNullException(parameterName);
+        }
+    }
+
+    /// <summary>
+    /// Determines if the <paramref name="predicate"/> is true, then throws the <paramref name="exception"/>.
+    /// </summary>
+    /// <param name="obj">The object.</param>
+    /// <param name="predicate">The predication.</param>
+    /// <param name="exception">Exception to throw</param>
+    /// <returns>The object.</returns>
+    public static T ThrowIfTrue<T>(this T obj, Predicate<T> predicate, Exception exception) where T : class
+    {
+        if (predicate(obj))
+        {
+            throw exception;
+        }
+
+        return obj;
+    }
+
+    #endregion
 
     /// <summary>
     /// Convert the specified object to <typeparamref name="T"/>.
@@ -143,21 +183,6 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// Throws if argument is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="obj">The object.</param>
-    /// <param name="parameterName">Name of the parameter.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static void ThrowIfArgumentIsNull<T>(this T obj, string parameterName) where T : class
-    {
-        if (obj == null)
-        {
-            throw new ArgumentNullException(parameterName);
-        }
-    }
-
-    /// <summary>
     /// To the data table with type name of <paramref name="entity"/>.
     /// </summary>
     /// <typeparam name="T">The entity type.</typeparam>
@@ -178,42 +203,6 @@ public static class ObjectExtensions
         }
 
         return table;
-    }
-
-    /// <summary>
-    /// Convertables the specified type.
-    /// </summary>
-    /// <param name="obj">The object.</param>
-    /// <param name="type">The type.</param>
-    /// <returns></returns>
-    public static bool Convertable(this object obj, ObjectConvertbleSupportedType type)
-    {
-        if (obj.IsNull())
-        {
-            return false;
-        }
-
-        try
-        {
-            if (type == ObjectConvertbleSupportedType.Int)
-            {
-                return int.TryParse(obj.ToString(), out int result);
-            }
-            else if (type == ObjectConvertbleSupportedType.Decimal)
-            {
-                return decimal.TryParse(obj.ToString(), out decimal result);
-            }
-            else if (type == ObjectConvertbleSupportedType.DateTime)
-            {
-                return DateTime.TryParse(obj.ToString(), out DateTime result);
-            }
-
-            return false;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     /// <summary>
@@ -289,43 +278,4 @@ public static class ObjectExtensions
 
         return obj;
     }
-
-    /// <summary>
-    /// Determines if the <paramref name="predicate"/> is true, then throws the <paramref name="exception"/>.
-    /// </summary>
-    /// <param name="obj">The object.</param>
-    /// <param name="predicate">The predication.</param>
-    /// <param name="exception">Exception to throw</param>
-    /// <returns>The object.</returns>
-    public static T ThrowIfTrue<T>(this T obj, Predicate<T> predicate, Exception exception) where T : class
-    {
-        if (predicate(obj))
-        {
-            throw exception;
-        }
-
-        return obj;
-    }
-}
-
-/// <summary>
-/// The object convertable supported type.
-/// </summary>
-[Serializable]
-public enum ObjectConvertbleSupportedType
-{
-    /// <summary>
-    /// The int
-    /// </summary>
-    Int = 0,
-
-    /// <summary>
-    /// The decimal
-    /// </summary>
-    Decimal = 1,
-
-    /// <summary>
-    /// The date time
-    /// </summary>
-    DateTime = 2
 }

@@ -13,7 +13,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Extensions.UnitTests", "src\System.Extensions.UnitTests\System.Extensions.UnitTests.csproj", "{B5B8EE6A-F895-4475-B2BC-FF07DB636917}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Extensions.UnitTests", "src\System.Extensions.UnitTests\System.Extensions.UnitTests.csproj", "{B5B8EE6A-F895-4475-B2BC-FF07DB636917}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{08699415-72B9-4F6B-B58F-2822D4559C87}"
+	ProjectSection(SolutionItems) = preProject
+		nuget\nuget-package.props = nuget\nuget-package.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

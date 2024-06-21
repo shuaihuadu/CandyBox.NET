@@ -11,7 +11,7 @@ public static class StringExtensions
     /// The <see cref="string.Trim()"/> method only trims 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x0085, 0x2028, and 0x2029.
     /// This array adds in control characters.
     /// </summary>
-    private static readonly char[] invisiableCharacters =
+    internal static readonly char[] invisiableCharacters =
     [
         (char)0x00, (char)0x01, (char)0x02, (char)0x03, (char)0x04, (char)0x05,
         (char)0x06, (char)0x07, (char)0x08, (char)0x09, (char)0x0a, (char)0x0b,
