@@ -61,30 +61,12 @@ public static class ObjectExtensions
     /// <param name="obj">The object.</param>
     /// <param name="parameterName">The parameter name.</param>
     /// <exception cref="ArgumentNullException" />
-    public static void ThrowIfNull<T>(this T obj, string parameterName) where T : class
+    public static void ThrowIfNull<T>([ValidatedNotNullAttribute] this T? obj, string parameterName)
     {
-        if (obj == null)
+        if (obj is null)
         {
             throw new ArgumentNullException(parameterName);
         }
-    }
-
-    /// <summary>
-    /// Determines if the <paramref name="predicate"/> is true, then throws the <paramref name="exception"/>.
-    /// </summary>
-    /// <param name="obj">The object.</param>
-    /// <param name="predicate">The predication.</param>
-    /// <param name="exception">Exception to throw</param>
-    /// <returns>The object.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static T ThrowIfTrue<T>(this T obj, Predicate<T> predicate, Exception exception) where T : class
-    {
-        if (predicate(obj))
-        {
-            throw exception;
-        }
-
-        return obj;
     }
 
     #endregion
@@ -110,9 +92,9 @@ public static class ObjectExtensions
     ///   <c>true</c> if the <paramref name="item"/> is in the <paramref name="list"/>; otherwise, <c>false</c>.
     /// </returns>
     /// <exception cref="ArgumentNullException">list</exception>
-    public static bool In<T>(this T item, params T[] list)
+    public static bool In<T>(this T? item, params T[] list)
     {
-        if (list.IsNull())
+        if (list.IsNullOrEmpty())
         {
             throw new ArgumentNullException(nameof(list));
         }
@@ -141,7 +123,7 @@ public static class ObjectExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="obj">The object.</param>
     /// <param name="action">The action.</param>
-    public static void With<T>(this T obj, Action<T> action)
+    public static void With<T>(this T? obj, Action<T?> action)
     {
         action(obj);
     }
@@ -154,7 +136,7 @@ public static class ObjectExtensions
     /// <returns></returns>
     public static T? To<T>(this object obj)
     {
-        return (T)Convert.ChangeType(obj, typeof(T));
+        return (T?)Convert.ChangeType(obj, typeof(T?));
     }
 
     /// <summary>
@@ -164,12 +146,13 @@ public static class ObjectExtensions
     /// <param name="obj">The object.</param>
     /// <param name="default">The default.</param>
     /// <returns></returns>
-    public static T To<T>(this object obj, T @default)
+    public static T? To<T>(this object obj, T @default)
     {
         T result = @default;
+
         try
         {
-            result = (T)Convert.ChangeType(obj, typeof(T));
+            result = (T)Convert.ChangeType(obj, typeof(T?));
             return result;
         }
         catch (Exception)
@@ -209,7 +192,7 @@ public static class ObjectExtensions
     /// <param name="isReverse">If true reverse the fileds in <typeparamref name="T"/>.</param>
     /// <param name="fileds">The fileds.</param>
     /// <returns></returns>
-    public static T HiddenPropertiesValue<T>(this T obj, bool isReverse = false, params string[] fileds) where T : class
+    public static T? HiddenPropertiesValue<T>(this T obj, bool isReverse = false, params string[] fileds) where T : class
     {
         if (obj.IsNull())
         {
@@ -237,7 +220,7 @@ public static class ObjectExtensions
     /// <param name="obj">The object.</param>
     /// <param name="properties">The properties for trim.</param>
     /// <returns></returns>
-    public static T SafeTrimStringProperties<T>(this T obj, params string[] properties) where T : class
+    public static T? SafeTrimStringProperties<T>(this T obj, params string[] properties) where T : class
     {
         if (obj.IsNull())
         {

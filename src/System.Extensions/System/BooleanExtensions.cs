@@ -23,9 +23,10 @@ public static class BooleanExtensions
     /// Determines if the <paramref name="value"/> is true then throws the <see cref="ArgumentException"/>.
     /// </summary>
     /// <param name="value">The bool value.</param>
-    /// <param name="parameterName">Exception to throw</param>
+    /// <param name="parameterName">Exception to throw.</param>
+    /// <param name="message">The exception message.</param>
     /// <returns>The object.</returns>
-    public static void ThrowArgumentExceptionIfTrue(this bool value, string parameterName)
+    public static void ThrowArgumentExceptionIfTrue([ValidatedNotNullAttribute] this bool value, string parameterName, string? message = null)
     {
         ThrowIfTrue(value, new ArgumentException(parameterName));
     }
@@ -35,8 +36,9 @@ public static class BooleanExtensions
     /// </summary>
     /// <param name="value">The bool value.</param>
     /// <param name="parameterName">Exception to throw</param>
+    /// <param name="message">The exception message.</param>
     /// <returns>The object.</returns>
-    public static void ThrowArgumentNullExceptionIfTrue(this bool value, string parameterName)
+    public static void ThrowArgumentNullExceptionIfTrue([ValidatedNotNullAttribute] this bool value, string parameterName, string? message = null)
     {
         ThrowIfTrue(value, new ArgumentNullException(parameterName));
     }
@@ -46,8 +48,9 @@ public static class BooleanExtensions
     /// </summary>
     /// <param name="value">The bool value.</param>
     /// <param name="parameterName">Exception to throw</param>
+    /// <param name="message">The exception message.</param>
     /// <returns>The object.</returns>
-    public static void ThrowArgumentExceptionIfFalse(this bool value, string parameterName)
+    public static void ThrowArgumentExceptionIfFalse([ValidatedNotNullAttribute] this bool value, string parameterName, string? message = null)
     {
         ThrowArgumentExceptionIfTrue(!value, parameterName);
     }
@@ -57,8 +60,9 @@ public static class BooleanExtensions
     /// </summary>
     /// <param name="value">The bool value.</param>
     /// <param name="parameterName">Exception to throw</param>
+    /// <param name="message">The exception message.</param>
     /// <returns>The object.</returns>
-    public static void ThrowArgumentNullExceptionIfFalse(this bool value, string parameterName)
+    public static void ThrowArgumentNullExceptionIfFalse([ValidatedNotNullAttribute] this bool value, string parameterName, string? message = null)
     {
         ThrowArgumentNullExceptionIfTrue(!value, parameterName);
     }
@@ -69,7 +73,7 @@ public static class BooleanExtensions
     /// <param name="value">The bool value.</param>
     /// <param name="exception">Exception to throw</param>
     /// <returns>The object.</returns>
-    public static void ThrowIfTrue(this bool value, Exception exception)
+    public static void ThrowIfTrue([ValidatedNotNullAttribute] this bool value, Exception exception)
     {
         if (value)
         {
@@ -83,7 +87,7 @@ public static class BooleanExtensions
     /// <param name="value">The bool value.</param>
     /// <param name="exception">Exception to throw</param>
     /// <returns>The object.</returns>
-    public static void ThrowIfFlase(this bool value, Exception exception)
+    public static void ThrowIfFlase([ValidatedNotNullAttribute] this bool value, Exception exception)
     {
         ThrowIfTrue(!value, exception);
     }

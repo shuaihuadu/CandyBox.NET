@@ -13,9 +13,11 @@ public static class IEnumerableExtensions
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     /// <param name="collection">The collection to clone.</param>
     /// <returns>A new object that is a copy of <see cref="IEnumerable{T}"/>.</returns>
-    public static IEnumerable<T> Clone<T>(this IEnumerable<T> collection) where T : ICloneable
+    public static IEnumerable<T> Clone<T>(this IEnumerable<T>? collection) where T : ICloneable
     {
-        return collection.Select(item => (T)item.Clone());
+        collection.ThrowIfNull(nameof(collection));
+
+        return collection!.Select(item => (T)item.Clone());
     }
 
     /// <summary>
@@ -23,7 +25,7 @@ public static class IEnumerableExtensions
     /// </summary>
     /// <param name="collection">The collection.</param>
     /// <returns>true if the collection is null or an empty collection; otherwise, false.</returns>
-    public static bool IsNullOrEmpty(this IEnumerable collection)
+    public static bool IsNullOrEmpty(this IEnumerable? collection)
     {
         if (collection == null)
         {
@@ -39,7 +41,7 @@ public static class IEnumerableExtensions
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     /// <param name="collection">The collection.</param>
     /// <returns>true if the collection is null or an empty collection; otherwise, false.</returns>
-    public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection)
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T>? collection)
     {
         return collection == null || !collection.Any();
     }
@@ -50,7 +52,7 @@ public static class IEnumerableExtensions
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     /// <param name="collection">The collection.</param>
     /// <returns>true if the collection is not null or not an empty collection; otherwise, false.</returns>
-    public static bool IsNotNullOrEmpty<T>(this IEnumerable<T> collection)
+    public static bool IsNotNullOrEmpty<T>(this IEnumerable<T>? collection)
     {
         return !collection.IsNullOrEmpty();
     }
@@ -60,7 +62,7 @@ public static class IEnumerableExtensions
     /// </summary>
     /// <param name="collection">The collection.</param>
     /// <returns>true if the collection is not null or not an empty collection; otherwise, false.</returns>
-    public static bool IsNotNullOrEmpty(this IEnumerable collection)
+    public static bool IsNotNullOrEmpty(this IEnumerable? collection)
     {
         return !collection.IsNullOrEmpty();
     }
