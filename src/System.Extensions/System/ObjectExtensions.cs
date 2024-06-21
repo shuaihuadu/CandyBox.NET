@@ -53,24 +53,6 @@ public static class ObjectExtensions
 
     #endregion
 
-    #region Throw
-
-    /// <summary>
-    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="obj"/> is null.
-    /// </summary>
-    /// <param name="obj">The object.</param>
-    /// <param name="parameterName">The parameter name.</param>
-    /// <exception cref="ArgumentNullException" />
-    public static void ThrowIfNull<T>([ValidatedNotNullAttribute] this T? obj, string parameterName)
-    {
-        if (obj is null)
-        {
-            throw new ArgumentNullException(parameterName);
-        }
-    }
-
-    #endregion
-
     /// <summary>
     /// Convert the specified object to <typeparamref name="T"/>.
     /// </summary>

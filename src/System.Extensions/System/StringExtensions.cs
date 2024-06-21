@@ -652,7 +652,10 @@ public static class StringExtensions
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static T ToEnum<T>(this string? value, bool ignoreCase = true)
     {
-        value.ThrowIfNullOrBlank(nameof(value), "Must specify valid information for parsing in the string.");
+        if (value.IsNullOrBlank())
+        {
+            throw new ArgumentNullException(nameof(value), "Must specify valid information for parsing in the string.");
+        }
 
         Type t = typeof(T);
 
@@ -958,7 +961,10 @@ public static class StringExtensions
     /// <returns>The decoded string.</returns>
     public static string Base64Decode(this string? base64String, Encoding? encoding = null)
     {
-        base64String.ThrowIfNullOrBlank(nameof(base64String));
+        if (base64String.IsNullOrBlank())
+        {
+            return string.Empty;
+        }
 
         encoding ??= Encoding.UTF8;
 
@@ -977,36 +983,15 @@ public static class StringExtensions
     /// <returns>The Base64 encoded string.</returns>
     public static string Base64Encode(string? value, Encoding? encoding = null)
     {
-        value.ThrowIfNullOrBlank(nameof(value));
+        if (value.IsNullOrBlank())
+        {
+            return string.Empty;
+        }
 
         encoding ??= Encoding.UTF8;
 
         byte[] bytes = Encoding.UTF8.GetBytes(value!);
 
         return Convert.ToBase64String(bytes);
-    }
-
-    /// <summary>
-    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="value"/> is null or empty.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="parameterName">The parameter name.</param>
-    /// <param name="message">The exception message.</param>
-    /// <exception cref="ArgumentNullException" />
-    public static void ThrowIfNullOrEmpty([ValidatedNotNullAttribute] this string? value, string parameterName, string? message = null)
-    {
-        value.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(parameterName, message);
-    }
-
-    /// <summary>
-    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="value"/> is null or empty or white space.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="parameterName">The parameter name.</param>
-    /// <param name="message">The exception message.</param>
-    /// <exception cref="ArgumentNullException" />
-    public static void ThrowIfNullOrBlank([ValidatedNotNullAttribute] this string? value, string parameterName, string? message = null)
-    {
-        value.IsNullOrBlank().ThrowArgumentNullExceptionIfTrue(parameterName, message);
     }
 }

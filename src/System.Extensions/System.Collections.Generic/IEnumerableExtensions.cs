@@ -15,9 +15,7 @@ public static class IEnumerableExtensions
     /// <returns>A new object that is a copy of <see cref="IEnumerable{T}"/>.</returns>
     public static IEnumerable<T> Clone<T>(this IEnumerable<T>? collection) where T : ICloneable
     {
-        collection.ThrowIfNull(nameof(collection));
-
-        return collection!.Select(item => (T)item.Clone());
+        return collection is null ? throw new ArgumentNullException(nameof(collection)) : collection.Select(item => (T)item.Clone());
     }
 
     /// <summary>
@@ -86,9 +84,13 @@ public static class IEnumerableExtensions
     /// <exception cref="ArgumentNullException"></exception>
     /// <returns>The converted datatable.</returns>
     [Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3267:Loops should be simplified with \"LINQ\" expressions", Justification = "Make the code harder to read.")]
+    [Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1255:Simplify argument null check", Justification = "Does not support .net standard 2.0.")]
     public static DataTable ToDataTable<T>(this IEnumerable<T> collection) where T : class
     {
-        collection.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(nameof(collection));
+        if (collection is null)
+        {
+            throw new ArgumentNullException(nameof(collection));
+        }
 
         Type entityType = typeof(T);
 
@@ -112,27 +114,5 @@ public static class IEnumerableExtensions
         }
 
         return dataTable;
-    }
-
-    /// <summary>
-    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="collection"/> is null or has no elements.
-    /// </summary>
-    /// <param name="collection">The value.</param>
-    /// <param name="parameterName">The parameter name.</param>
-    /// <exception cref="ArgumentNullException" />
-    public static void ThrowIfNullOrEmpty(this IEnumerable collection, string parameterName)
-    {
-        collection.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(parameterName);
-    }
-
-    /// <summary>
-    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="collection"/> is null or has no elements.
-    /// </summary>
-    /// <param name="collection">The value.</param>
-    /// <param name="parameterName">The parameter name.</param>
-    /// <exception cref="ArgumentNullException" />
-    public static void ThrowIfNullOrEmpty<T>(this IEnumerable<T> collection, string parameterName)
-    {
-        collection.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(parameterName);
     }
 }
