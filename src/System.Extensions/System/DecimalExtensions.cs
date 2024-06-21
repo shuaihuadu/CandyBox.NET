@@ -40,10 +40,18 @@ public static class DecimalExtensions
             return $"{size / Convert.ToDecimal(Math.Pow(1024, 3)):F0}GB";
         }
 
-        return size < Convert.ToDecimal(Math.Pow(1024, 5))
-            ? $"{size / Convert.ToDecimal(Math.Pow(1024, 4)):F0}TB"
-            : size < Convert.ToDecimal(Math.Pow(1024, 6))
-            ? $"{size / Convert.ToDecimal(Math.Pow(1024, 5)):F0}PB"
-            : $"{size / Convert.ToDecimal(Math.Pow(1024, 6)):F0}EB";
+        if (size < Convert.ToDecimal(Math.Pow(1024, 5)))
+        {
+            return $"{size / Convert.ToDecimal(Math.Pow(1024, 4)):F0}TB";
+        }
+
+        decimal threshold = Convert.ToDecimal(Math.Pow(1024, 6));
+
+        if (size < threshold)
+        {
+            return $"{size / Convert.ToDecimal(Math.Pow(1024, 5)):F0}PB";
+        }
+
+        return $"{size / threshold:F0}EB";
     }
 }

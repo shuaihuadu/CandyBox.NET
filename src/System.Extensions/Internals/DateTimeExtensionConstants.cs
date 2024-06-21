@@ -27,5 +27,5 @@ internal static class DateTimeExtensionConstants
     /// <summary>
     /// The database null datetime
     /// </summary>
-    public static readonly DateTime DB_NULL_DATETIME = new(1900, 1, 1, 0, 0, 0, 0);
+    public static readonly DateTime DB_NULL_DATETIME = new(1900, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 }

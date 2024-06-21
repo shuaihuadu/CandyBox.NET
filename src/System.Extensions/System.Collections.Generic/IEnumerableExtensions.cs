@@ -34,16 +34,6 @@ public static class IEnumerableExtensions
     }
 
     /// <summary>
-    /// Indicates whether the specified collection is not null or not an empty collection.
-    /// </summary>
-    /// <param name="collection">The collection to test.</param>
-    /// <returns>true if the collection is not null or not an empty collection; otherwise, false.</returns>
-    public static bool IsNotNullOrEmpty(this IEnumerable collection)
-    {
-        return !collection.IsNullOrEmpty();
-    }
-
-    /// <summary>
     /// Indicates whether the specified collection is null or an empty collection.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
@@ -66,6 +56,16 @@ public static class IEnumerableExtensions
     }
 
     /// <summary>
+    /// Indicates whether the specified collection is not null or not an empty collection.
+    /// </summary>
+    /// <param name="collection">The collection to test.</param>
+    /// <returns>true if the collection is not null or not an empty collection; otherwise, false.</returns>
+    public static bool IsNotNullOrEmpty(this IEnumerable collection)
+    {
+        return !collection.IsNullOrEmpty();
+    }
+
+    /// <summary>
     /// Get an empty collection If <paramref name="collection"/> is null.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
@@ -83,6 +83,7 @@ public static class IEnumerableExtensions
     /// <param name="collection">The collection to convert.</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <returns>The converted datatable.</returns>
+    [Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3267:Loops should be simplified with \"LINQ\" expressions", Justification = "Make the code harder to read.")]
     public static DataTable ToDataTable<T>(this IEnumerable<T> collection) where T : class
     {
         collection.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(nameof(collection));

@@ -503,8 +503,6 @@ internal static class PinYinHelper
     private const int LastChCode = -2050;
     // GB2312-80 标准规范中最后一个一级汉字的机内码.即"座"的机内码
     private const int LastOfOneLevelChCode = -10247;
-    // 配置中文字符
-    //static Regex regex = new Regex("[\u4e00-\u9fa5]$");
 
     #endregion
 
@@ -544,14 +542,12 @@ internal static class PinYinHelper
                     // 从最后的块开始扫描,如果机内码大于块的第一个机内码,说明在此块中
                     if (chr >= pyValue[aboutPos])
                     {
-                        // Console.WriteLine("存在于第 " + aPos.ToString() + " 块,此块的第一个机内码是: " + pyValue[aPos * 33].ToString());
                         // 遍历块中的每个音节机内码,从最后的音节机内码开始扫描,
                         // 如果音节内码小于机内码,则取此音节
                         for (int i = aboutPos + 32; i >= aboutPos; i--)
                         {
                             if (pyValue[i] <= chr)
                             {
-                                // Console.WriteLine("找到第一个小于要查找机内码的机内码: " + pyValue[i].ToString());
                                 return pyName[i];
                             }
                         }

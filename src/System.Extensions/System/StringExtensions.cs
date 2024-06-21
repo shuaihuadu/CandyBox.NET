@@ -186,12 +186,21 @@ public static class StringExtensions
     {
         string[] formats = ["D", "d", "N", "n", "P", "p", "B", "b", "X", "x"];
 
-        if (!formats.Contains(format))
+        try
         {
-            format = formats[0];
-        }
+            if (!formats.Contains(format))
+            {
+                format = formats[0];
+            }
 
-        return Guid.TryParse(value, out Guid guid);
+            Guid.ParseExact(value, format);
+
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -205,10 +214,11 @@ public static class StringExtensions
     {
         try
         {
-            CultureInfo c = CultureInfo.GetCultureInfo(value);
+            CultureInfo.GetCultureInfo(value);
+
             return true;
         }
-        catch
+        catch (CultureNotFoundException)
         {
             return false;
         }
@@ -226,10 +236,15 @@ public static class StringExtensions
     {
         try
         {
-            byte.Parse(value, style);
+            _ = byte.Parse(value, style);
+
             return true;
         }
-        catch (Exception)
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (OverflowException)
         {
             return false;
         }
@@ -247,10 +262,15 @@ public static class StringExtensions
     {
         try
         {
-            short.Parse(value, style);
+            _ = short.Parse(value, style);
+
             return true;
         }
-        catch (Exception)
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (OverflowException)
         {
             return false;
         }
@@ -268,10 +288,15 @@ public static class StringExtensions
     {
         try
         {
-            int.Parse(value, style);
+            _ = int.Parse(value, style);
+
             return true;
         }
-        catch (Exception)
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (OverflowException)
         {
             return false;
         }
@@ -289,10 +314,15 @@ public static class StringExtensions
     {
         try
         {
-            int.Parse(value, style);
+            _ = long.Parse(value, style);
+
             return true;
         }
-        catch (Exception)
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (OverflowException)
         {
             return false;
         }
@@ -310,10 +340,15 @@ public static class StringExtensions
     {
         try
         {
-            decimal.Parse(value, style);
+            _ = decimal.Parse(value, style);
+
             return true;
         }
-        catch (Exception)
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (OverflowException)
         {
             return false;
         }
@@ -331,10 +366,15 @@ public static class StringExtensions
     {
         try
         {
-            float.Parse(value, style);
+            _ = float.Parse(value, style);
+
             return true;
         }
-        catch (Exception)
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (OverflowException)
         {
             return false;
         }
@@ -355,7 +395,7 @@ public static class StringExtensions
         {
             if (provider.IsNull())
             {
-                DateTime.Parse(value);
+                _ = DateTime.Parse(value, CultureInfo.InvariantCulture, styles);
             }
             else
             {
@@ -368,28 +408,6 @@ public static class StringExtensions
         {
             return false;
         }
-    }
-
-    /// <summary>
-    /// Determines whether the <paramref name="value"/> is a valid date time.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static bool IsDateTime(this string value)
-    {
-        if (value.IsNullOrBlank())
-        {
-            return false;
-        }
-
-        var dateTime = DateTimeExtensionConstants.DB_NULL_DATETIME;
-
-        if (DateTime.TryParse(value, out dateTime))
-        {
-            return dateTime > DateTimeExtensionConstants.DB_NULL_DATETIME;
-        }
-
-        return false;
     }
 
     /// <summary>
@@ -511,84 +529,9 @@ public static class StringExtensions
     /// Convert specified string to a <see cref="byte"/> value.
     /// </summary>
     /// <param name="value">The string to test.</param>
-    /// <param name="default">The default value while the convert faild.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="byte"/> value.If the specified string is not a byte value,returns the <paramref name="default"/>.</returns>
-    public static byte ToByte(this string value, byte @default = 0)
-    {
-        try
-        {
-            return value.ToByte();
-        }
-        catch (ArgumentException)
-        {
-            return @default;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="short"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="default">The default value while the convert faild.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="short"/> value.If the specified string is not a <see cref="short"/> value,returns the <paramref name="default"/>.</returns>
-    public static short ToInt16(this string value, short @default)
-    {
-        try
-        {
-            return value.ToInt16();
-        }
-        catch (ArgumentException)
-        {
-            return @default;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to an <see cref="int"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="default">The default value while the convert faild.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="int"/> value.If the specified string is not a <see cref="int"/> value,returns the <paramref name="default"/>.</returns>
-    public static int ToInt32(this string value, int @default = 0)
-    {
-        try
-        {
-            return value.ToInt32();
-        }
-        catch (ArgumentException)
-        {
-            return @default;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="long"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <param name="default">The default value while the convert faild.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="long"/> value.If the specified string is not a <see cref="long"/> value,returns the <paramref name="default"/>.</returns>
-    public static long ToInt64(this string value, long @default = 0)
-    {
-        try
-        {
-            return value.ToInt64();
-        }
-        catch (ArgumentException)
-        {
-            return @default;
-        }
-    }
-
-    /// <summary>
-    /// Convert specified string to a <see cref="byte"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="byte"/> value.</returns>
+    /// <exception cref="ArgumentException">When convert faild.</exception>
     public static byte ToByte(this string value)
     {
         if (!value.IsNullOrBlank() && byte.TryParse(value, out byte result))
@@ -603,8 +546,8 @@ public static class StringExtensions
     /// Convert specified string to a <see cref="short"/> value.
     /// </summary>
     /// <param name="value">The string to test.</param>
-    /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="short"/> value.</returns>
+    /// <exception cref="ArgumentException">When convert faild.</exception>
     public static short ToInt16(this string value)
     {
         if (!value.IsNullOrBlank() && short.TryParse(value, out short result))
@@ -621,6 +564,7 @@ public static class StringExtensions
     /// <param name="value">The string to test.</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="int"/> value.</returns>
+    /// <exception cref="ArgumentException">When convert faild.</exception>
     public static int ToInt32(this string value)
     {
         if (!value.IsNullOrBlank() && int.TryParse(value, out int result))
@@ -635,8 +579,8 @@ public static class StringExtensions
     /// Convert specified string to a <see cref="long"/> value.
     /// </summary>
     /// <param name="value">The string to test.</param>
-    /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="long"/> value.</returns>
+    /// <exception cref="ArgumentException">When convert faild.</exception>
     public static long ToInt64(this string value)
     {
         if (!value.IsNullOrBlank() && long.TryParse(value, out long result))
@@ -653,8 +597,8 @@ public static class StringExtensions
     /// <typeparam name="T">The type of enum.</typeparam>
     /// <param name="value">The string to test.</param>
     /// <param name="ignoreCase">true to ignore case during the comparison; otherwise, false.</param>
-    /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="Enum"/> value.</returns>
+    /// <exception cref="ArgumentException">When convert faild.</exception>
     public static T ToEnum<T>(this string value, bool ignoreCase = true)
     {
         if (value.IsNullOrBlank())
@@ -666,35 +610,19 @@ public static class StringExtensions
 
         if (!t.IsEnum)
         {
-            throw new ArgumentException("Type provided must be an Enum.", "T");
+            throw new ArgumentException("Type provided must be an Enum.", typeof(T).Name);
         }
 
         return (T)Enum.Parse(t, value, ignoreCase);
     }
 
     /// <summary>
-    /// Convert specified string to a <see cref="DateTime"/> value.
-    /// </summary>
-    /// <param name="value">The string to test.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>The converted <see cref="DateTime"/> value.</returns>
-    public static DateTime ToDateTime(this string value)
-    {
-        if (!value.IsNullOrBlank() && DateTime.TryParse(value, out DateTime result))
-        {
-            return result;
-        }
-
-        throw new ArgumentException("The specified string is not an DateTime value.");
-    }
-
-    /// <summary>
     /// Convert specified string to a <see cref="Guid"/> value.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string to convert.</param>
     /// <param name="format">GUID format type.</param>
-    /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="Guid"/> value.</returns>
+    /// <exception cref="ArgumentException">When convert faild.</exception>
     public static Guid ToGuid(this string value, string format = "D")
     {
         string[] formats = ["D", "d", "N", "n", "P", "p", "B", "b", "X", "x"];
@@ -715,40 +643,21 @@ public static class StringExtensions
     /// <summary>
     /// To the date time with partten.
     /// </summary>
-    /// <param name="date">The date.</param>
+    /// <param name="dateTime">The date time string.</param>
     /// <param name="pattern">The pattern.</param>
     /// <param name="defaultValue">The default value.</param>
-    /// <returns></returns>
-    public static DateTime? ToDateTimeWithPartten(this string date, string pattern = DateTimeExtensionConstants.DEFAULT_DATE_FORMAT_PARTTEN, DateTime? defaultValue = null)
+    /// <param name="formatProvider">An object that supplies culture-specific format information abouts.</param>
+    /// <returns>The converted <see cref="DateTime"/> value.</returns>
+    /// <exception cref="ArgumentException">When convert faild.</exception>
+    public static DateTime? ToDateTimeWithPartten(this string dateTime, string pattern = DateTimeExtensionConstants.DEFAULT_DATE_FORMAT_PARTTEN, DateTime? defaultValue = null, IFormatProvider? formatProvider = null)
     {
+        formatProvider ??= CultureInfo.InvariantCulture;
+
         try
         {
-            return DateTime.ParseExact(date, pattern, null);
+            return DateTime.ParseExact(dateTime, pattern, formatProvider);
         }
         catch (Exception)
-        {
-            return defaultValue;
-        }
-    }
-
-    /// <summary>
-    /// To the date time.
-    /// </summary>
-    /// <param name="date">The date.</param>
-    /// <param name="defaultValue">The default value.</param>
-    /// <returns></returns>
-    public static DateTime? ToDateTime(this string date, DateTime? defaultValue = null)
-    {
-        if (date.IsNullOrBlank())
-        {
-            return null;
-        }
-
-        try
-        {
-            return date.ToDateTime();
-        }
-        catch (ArgumentException)
         {
             return defaultValue;
         }
@@ -762,11 +671,11 @@ public static class StringExtensions
     /// <returns></returns>
     public static string ToSafeFileName(this string value, char replacement = '_')
     {
-        var invalidChars = Path.GetInvalidFileNameChars();
+        char[] invalidChars = Path.GetInvalidFileNameChars();
 
         if (invalidChars.Contains(replacement))
         {
-            throw new ArgumentException(null, nameof(replacement));
+            throw new ArgumentException("Invalid replacement.", nameof(replacement));
         }
 
         return invalidChars.Aggregate(value, (accmulate, result) => (accmulate.Replace(result, '_')));
@@ -780,11 +689,11 @@ public static class StringExtensions
     /// <returns></returns>
     public static string ToSafeFilePath(this string value, char replacement = '_')
     {
-        var invalidChars = Path.GetInvalidPathChars();
+        char[] invalidChars = Path.GetInvalidPathChars();
 
         if (invalidChars.Contains(replacement))
         {
-            throw new ArgumentException(null, nameof(replacement));
+            throw new ArgumentException("Invalid replacement.", nameof(replacement));
         }
 
         return invalidChars.Aggregate(value, (accmulate, result) => (accmulate.Replace(result, '_')));

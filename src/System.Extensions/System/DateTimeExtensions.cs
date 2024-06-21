@@ -16,7 +16,9 @@ public static class DateTimeExtensions
     /// <returns>The string value of relative time.</returns>
     public static string ToRelativeTime(this DateTime dateTime, string format)
     {
+#pragma warning disable S6561 // Avoid using "DateTime.Now" for benchmarking or timing operations
         TimeSpan difference = DateTime.Now - dateTime;
+#pragma warning restore S6561 // Avoid using "DateTime.Now" for benchmarking or timing operations
 
         if (difference.TotalSeconds < 50)
         {
@@ -74,13 +76,6 @@ public static class DateTimeExtensions
     }
 
     /// <summary>
-    /// Returns the <see cref="DateTime"/> with max time value of the specified date.
-    /// </summary>
-    /// <param name="dateTime">The <see cref="DateTime"/></param>
-    /// <returns>The datetime with max time of the <paramref name="dateTime"/></returns>
-    public static DateTime ToDateWithMaxTime(this DateTime dateTime) => dateTime.Date.AddDays(1).AddMilliseconds(-1);
-
-    /// <summary>
     /// Returns the <see cref="DateTime"/> with min time value of the specified date.
     /// </summary>
     /// <param name="dateTime">The <see cref="DateTime"/></param>
@@ -88,32 +83,53 @@ public static class DateTimeExtensions
     public static DateTime ToDateWithMinTime(this DateTime dateTime) => dateTime.Date;
 
     /// <summary>
-    /// Returns the min value of sql server datetime.
+    /// To the date with minimum time.
+    /// </summary>
+    /// <param name="dateTime">The date time.</param>
+    /// <returns></returns>
+    public static DateTime? ToDateWithMinTime(this DateTime? dateTime) => dateTime.HasValue ? dateTime.Value.ToDateWithMinTime() : dateTime;
+
+    /// <summary>
+    /// Returns the <see cref="DateTime"/> with max time value of the specified date.
     /// </summary>
     /// <param name="dateTime">The <see cref="DateTime"/></param>
-    /// <returns>1753/01/01 00:00:00 000</returns>
-    public static DateTime SqlServerMinValue(this DateTime dateTime) => new(1753, 1, 1, 0, 0, 0, 0);
+    /// <returns>The datetime with max time of the <paramref name="dateTime"/></returns>
+    public static DateTime ToDateWithMaxTime(this DateTime dateTime) => dateTime.Date.AddDays(1).AddMilliseconds(-1);
+
+    /// <summary>
+    /// To the date with maximum time.
+    /// </summary>
+    /// <param name="dateTime">The date time.</param>
+    /// <returns></returns>
+    public static DateTime? ToDateWithMaxTime(this DateTime? dateTime) => dateTime.HasValue ? dateTime.Value.ToDateWithMaxTime() : dateTime;
 
     /// <summary>
     /// Returns the min value of sql server datetime.
     /// </summary>
     /// <param name="dateTime">The <see cref="DateTime"/></param>
     /// <returns>1753/01/01 00:00:00 000</returns>
-    public static DateTime SqlServerMinValue(this DateTime? dateTime) => new(1753, 1, 1, 0, 0, 0, 0);
+    public static DateTime SqlServerMinValue(this DateTime dateTime) => new(1753, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+
+    /// <summary>
+    /// Returns the min value of sql server datetime.
+    /// </summary>
+    /// <param name="dateTime">The <see cref="DateTime"/></param>
+    /// <returns>1753/01/01 00:00:00 000</returns>
+    public static DateTime SqlServerMinValue(this DateTime? dateTime) => new(1753, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
     /// <summary>
     /// Returns the max value of sql server datetime.
     /// </summary>
     /// <param name="dateTime">The <see cref="DateTime"/></param>
     /// <returns>9999/12/31 23:59:59 997</returns>
-    public static DateTime SqlServerMaxValue(this DateTime dateTime) => new(9999, 12, 31, 23, 59, 59, 997);
+    public static DateTime SqlServerMaxValue(this DateTime dateTime) => new(9999, 12, 31, 23, 59, 59, 997, DateTimeKind.Utc);
 
     /// <summary>
     /// Returns the max value of sql server datetime.
     /// </summary>
     /// <param name="dateTime">The <see cref="DateTime"/></param>
     /// <returns>9999/12/31 23:59:59 997</returns>
-    public static DateTime SqlServerMaxValue(this DateTime? dateTime) => new(9999, 12, 31, 23, 59, 59, 997);
+    public static DateTime SqlServerMaxValue(this DateTime? dateTime) => new(9999, 12, 31, 23, 59, 59, 997, DateTimeKind.Utc);
 
     /// <summary>
     /// Returns the safe value of sql server datetime.
@@ -122,8 +138,8 @@ public static class DateTimeExtensions
     /// <returns>A safe value of sql server dateTime</returns>
     public static DateTime ToSqlServerSafeDateTime(this DateTime dateTime)
     {
-        DateTime sqlServerMaxDateTime = new(9999, 12, 31, 23, 59, 59, 997);
-        DateTime sqlServerMinDateTime = new(1753, 1, 1, 0, 0, 0, 0);
+        DateTime sqlServerMaxDateTime = new(9999, 12, 31, 23, 59, 59, 997, DateTimeKind.Utc);
+        DateTime sqlServerMinDateTime = new(1753, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
         if (dateTime > sqlServerMaxDateTime)
         {
@@ -296,20 +312,6 @@ public static class DateTimeExtensions
 
         return dateTime.Value.ToDateTimeString(partten);
     }
-
-    /// <summary>
-    /// To the date with minimum time.
-    /// </summary>
-    /// <param name="dateTime">The date time.</param>
-    /// <returns></returns>
-    public static DateTime? ToDateWithMinTime(this DateTime? dateTime) => dateTime.HasValue ? dateTime.Value.ToDateWithMinTime() : dateTime;
-
-    /// <summary>
-    /// To the date with maximum time.
-    /// </summary>
-    /// <param name="dateTime">The date time.</param>
-    /// <returns></returns>
-    public static DateTime? ToDateWithMaxTime(this DateTime? dateTime) => dateTime.HasValue ? dateTime.Value.ToDateWithMaxTime() : dateTime;
 
     /// <summary>
     /// To the date with maximum time.

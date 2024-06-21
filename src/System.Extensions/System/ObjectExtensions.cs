@@ -154,11 +154,7 @@ public static class ObjectExtensions
     /// <returns></returns>
     public static T? To<T>(this object obj)
     {
-        T? result = default;
-
-        result = (T)Convert.ChangeType(obj, typeof(T));
-
-        return result;
+        return (T)Convert.ChangeType(obj, typeof(T));
     }
 
     /// <summary>
@@ -248,7 +244,7 @@ public static class ObjectExtensions
             return obj;
         }
 
-        PropertyInfo[] innerProperties = [];
+        PropertyInfo[] innerProperties;
 
         if (properties.IsNotNullOrEmpty())
         {
