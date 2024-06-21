@@ -25,7 +25,7 @@ public static class StringExtensions
 
     /// <summary>
     /// Indicates whether the specified string is null or an System.String.Empty string(Include all invisible  characters).
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is null or an empty string ("") or whitespace; otherwise, false.</returns>
     /// </summary>
     public static bool IsNullOrBlank(this string value)
@@ -45,7 +45,7 @@ public static class StringExtensions
 
     /// <summary>
     /// Indicates whether the specified string is null or an System.String.Empty string(Include all invisible  characters).
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is not null or not an empty string (""); otherwise, false.</returns>
     /// </summary>
     public static bool IsNotNullOrBlank(this string value)
@@ -56,7 +56,7 @@ public static class StringExtensions
     /// <summary>
     /// Indicates whether the specified string is a correct email address.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is a correct email address; otherwise, false.</returns>
     public static bool IsEmail(this string value)
     {
@@ -71,7 +71,7 @@ public static class StringExtensions
     /// <summary>
     /// Indicates whether the specified string is a correct chinese mobile phone number.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is a correct chinese mobile phone number; otherwise, false.</returns>
     public static bool IsChineseMobile(this string value)
     {
@@ -86,7 +86,7 @@ public static class StringExtensions
     /// <summary>
     /// Indicates whether the specified string is a correct uri.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is a correct uri; otherwise ,false.</returns>
     public static bool IsUrl(this string value)
     {
@@ -96,7 +96,7 @@ public static class StringExtensions
     /// <summary>
     /// Indicates whether the specified string is Chinese character.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is Chinese character; otherwise, false.</returns>
     public static bool IsHans(this string value)
     {
@@ -111,7 +111,7 @@ public static class StringExtensions
     /// <summary>
     /// Indicates whether the specified string is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <param name="minLength">The min length for validate.</param>
     /// <param name="maxLength">The max length for validate.</param>
     /// <exception cref="ArgumentException"></exception>
@@ -144,7 +144,7 @@ public static class StringExtensions
     /// <summary>
     /// Indicates whether the specified string bytes is between <paramref name="min"/> and <paramref name="max"/>.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <param name="min">The min bytes count.</param>
     /// <param name="max">The max bytes count.</param>
     /// <exception cref="ArgumentException"></exception>
@@ -179,7 +179,7 @@ public static class StringExtensions
     /// <summary>
     /// Indicates whether the specified string is a correct <see cref="Guid"/>.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <param name="format">GUID format type.</param>
     /// <returns>true if the value parameter is a correct <see cref="Guid"/>; otherwise, false.</returns>
     public static bool IsGuid(this string value, string format = "D")
@@ -448,7 +448,7 @@ public static class StringExtensions
     /// <summary>
     /// Removes all invisible characters from the current System.String object.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>
     /// The string that remains after all invisible  characters are removed from the
     /// start and end of the current string. If no characters can be trimmed from the
@@ -474,7 +474,7 @@ public static class StringExtensions
     /// <summary>
     /// Removes all leading and trailing invisible  characters from the current System.String object.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>
     /// The string that remains after all invisible  characters are removed from the
     /// start and end of the current string. If no characters can be trimmed from the
@@ -493,7 +493,7 @@ public static class StringExtensions
     /// <summary>
     /// Reverse the specified string.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>The reversed string</returns>
     public static string Reverse(this string value)
     {
@@ -511,7 +511,7 @@ public static class StringExtensions
     /// <summary>
     /// Truncate the specified string to the specified length.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <param name="length">The length of remained.</param>
     /// <param name="cutOffReplacement">The replacement of the removed part of the <see cref="string"/>.</param>
     /// <returns>The string truncated.</returns>
@@ -528,7 +528,7 @@ public static class StringExtensions
     /// <summary>
     /// Convert specified string to a <see cref="byte"/> value.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="byte"/> value.</returns>
     /// <exception cref="ArgumentException">When convert faild.</exception>
@@ -545,7 +545,7 @@ public static class StringExtensions
     /// <summary>
     /// Convert specified string to a <see cref="short"/> value.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>The converted <see cref="short"/> value.</returns>
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static short ToInt16(this string value)
@@ -561,7 +561,7 @@ public static class StringExtensions
     /// <summary>
     /// Convert specified string to an <see cref="int"/> value.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="int"/> value.</returns>
     /// <exception cref="ArgumentException">When convert faild.</exception>
@@ -578,7 +578,7 @@ public static class StringExtensions
     /// <summary>
     /// Convert specified string to a <see cref="long"/> value.
     /// </summary>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <returns>The converted <see cref="long"/> value.</returns>
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static long ToInt64(this string value)
@@ -595,7 +595,7 @@ public static class StringExtensions
     /// Convert specified string to an <see cref="Enum"/> value.
     /// </summary>
     /// <typeparam name="T">The type of enum.</typeparam>
-    /// <param name="value">The string to test.</param>
+    /// <param name="value">The string.</param>
     /// <param name="ignoreCase">true to ignore case during the comparison; otherwise, false.</param>
     /// <returns>The converted <see cref="Enum"/> value.</returns>
     /// <exception cref="ArgumentException">When convert faild.</exception>
@@ -908,5 +908,27 @@ public static class StringExtensions
         byte[] bytes = Encoding.UTF8.GetBytes(value);
 
         return Convert.ToBase64String(bytes);
+    }
+
+    /// <summary>
+    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="value"/> is null or empty.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="parameterName">The parameter name.</param>
+    /// <exception cref="ArgumentNullException" />
+    public static void ThrowIfNullOrEmpty(this string value, string parameterName)
+    {
+        value.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(parameterName);
+    }
+
+    /// <summary>
+    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="value"/> is null or empty or white space.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="parameterName">The parameter name.</param>
+    /// <exception cref="ArgumentNullException" />
+    public static void ThrowIfNullOrBlank(this string value, string parameterName)
+    {
+        value.IsNullOrBlank().ThrowArgumentNullExceptionIfTrue(parameterName);
     }
 }

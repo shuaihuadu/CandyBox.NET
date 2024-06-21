@@ -12,7 +12,7 @@ public static class ObjectExtensions
     /// <summary>
     /// Indicates whether the specified object is null.
     /// </summary>
-    /// <param name="obj">The object to test.</param>
+    /// <param name="obj">The object.</param>
     /// <returns>true if the object is null;otherwise, false.</returns>
     public static bool IsNull<T>(this T? obj) where T : class
     {
@@ -22,7 +22,7 @@ public static class ObjectExtensions
     /// <summary>
     /// Indicates whether the specified object is not null.
     /// </summary>
-    /// <param name="obj">The object to test.</param>
+    /// <param name="obj">The object.</param>
     /// <returns>true if the object is not null;otherwise, false.</returns>
     public static bool IsNotNull<T>(this T? obj) where T : class
     {
@@ -33,7 +33,7 @@ public static class ObjectExtensions
     /// Indicates whether the specified object is <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The type of expected.</typeparam>
-    /// <param name="obj">The object to test.</param>
+    /// <param name="obj">The object.</param>
     /// <returns>true if the object is <typeparamref name="T"/>;otherwise, false.</returns>
     public static bool Is<T>(this object obj) where T : class
     {
@@ -44,7 +44,7 @@ public static class ObjectExtensions
     /// Indicates whether the specified object is not <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The type of expected.</typeparam>
-    /// <param name="obj">The object to test.</param>
+    /// <param name="obj">The object.</param>
     /// <returns>true if the object is not <typeparamref name="T"/>;otherwise, false.</returns>
     public static bool IsNot<T>(this object obj) where T : class
     {
@@ -56,13 +56,12 @@ public static class ObjectExtensions
     #region Throw
 
     /// <summary>
-    /// Throws if argument is null.
+    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="obj"/> is null.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="obj">The object.</param>
-    /// <param name="parameterName">Name of the parameter.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static void ThrowIfArgumentIsNull<T>(this T obj, string parameterName) where T : class
+    /// <param name="parameterName">The parameter name.</param>
+    /// <exception cref="ArgumentNullException" />
+    public static void ThrowIfNull<T>(this T obj, string parameterName) where T : class
     {
         if (obj == null)
         {
@@ -77,6 +76,7 @@ public static class ObjectExtensions
     /// <param name="predicate">The predication.</param>
     /// <param name="exception">Exception to throw</param>
     /// <returns>The object.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static T ThrowIfTrue<T>(this T obj, Predicate<T> predicate, Exception exception) where T : class
     {
         if (predicate(obj))

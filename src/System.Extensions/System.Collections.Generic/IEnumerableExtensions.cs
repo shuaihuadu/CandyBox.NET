@@ -21,7 +21,7 @@ public static class IEnumerableExtensions
     /// <summary>
     /// Indicates whether the specified collection is null or an empty collection.
     /// </summary>
-    /// <param name="collection">The collection to test.</param>
+    /// <param name="collection">The collection.</param>
     /// <returns>true if the collection is null or an empty collection; otherwise, false.</returns>
     public static bool IsNullOrEmpty(this IEnumerable collection)
     {
@@ -37,7 +37,7 @@ public static class IEnumerableExtensions
     /// Indicates whether the specified collection is null or an empty collection.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
-    /// <param name="collection">The collection to test.</param>
+    /// <param name="collection">The collection.</param>
     /// <returns>true if the collection is null or an empty collection; otherwise, false.</returns>
     public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection)
     {
@@ -48,7 +48,7 @@ public static class IEnumerableExtensions
     /// Indicates whether the specified collection is not null or not an empty collection.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
-    /// <param name="collection">The collection to test.</param>
+    /// <param name="collection">The collection.</param>
     /// <returns>true if the collection is not null or not an empty collection; otherwise, false.</returns>
     public static bool IsNotNullOrEmpty<T>(this IEnumerable<T> collection)
     {
@@ -58,7 +58,7 @@ public static class IEnumerableExtensions
     /// <summary>
     /// Indicates whether the specified collection is not null or not an empty collection.
     /// </summary>
-    /// <param name="collection">The collection to test.</param>
+    /// <param name="collection">The collection.</param>
     /// <returns>true if the collection is not null or not an empty collection; otherwise, false.</returns>
     public static bool IsNotNullOrEmpty(this IEnumerable collection)
     {
@@ -69,7 +69,7 @@ public static class IEnumerableExtensions
     /// Get an empty collection If <paramref name="collection"/> is null.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
-    /// <param name="collection">The collection to test.</param>
+    /// <param name="collection">The collection.</param>
     /// <returns>The <paramref name="collection"/>,if <paramref name="collection"/>is null return an empty collection.</returns>
     public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> collection)
     {
@@ -110,5 +110,27 @@ public static class IEnumerableExtensions
         }
 
         return dataTable;
+    }
+
+    /// <summary>
+    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="collection"/> is null or has no elements.
+    /// </summary>
+    /// <param name="collection">The value.</param>
+    /// <param name="parameterName">The parameter name.</param>
+    /// <exception cref="ArgumentNullException" />
+    public static void ThrowIfNullOrEmpty(this IEnumerable collection, string parameterName)
+    {
+        collection.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(parameterName);
+    }
+
+    /// <summary>
+    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="collection"/> is null or has no elements.
+    /// </summary>
+    /// <param name="collection">The value.</param>
+    /// <param name="parameterName">The parameter name.</param>
+    /// <exception cref="ArgumentNullException" />
+    public static void ThrowIfNullOrEmpty<T>(this IEnumerable<T> collection, string parameterName)
+    {
+        collection.IsNullOrEmpty().ThrowArgumentNullExceptionIfTrue(parameterName);
     }
 }
