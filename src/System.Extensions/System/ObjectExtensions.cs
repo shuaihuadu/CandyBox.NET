@@ -86,13 +86,14 @@ public static class ObjectExtensions
 
     /// <summary>
     /// Determines whether the <paramref name="actual"/> is between <paramref name="lower"/> and <paramref name="upper"/>.
+    /// <br />Rule: <paramref name="actual"/> &gt;= <paramref name="lower"/> and <paramref name="actual"/> &lt;= <paramref name="upper"/>.
     /// </summary>
     /// <typeparam name="T">The type where inherts <see cref="IComparable{T}"/></typeparam>
     /// <param name="actual">The actual.</param>
     /// <param name="lower">The lower.</param>
     /// <param name="upper">The upper.</param>
     /// <returns>
-    ///   <c>true</c> <paramref name="actual"/> is between <paramref name="lower"/> and <paramref name="upper"/>; otherwise, <c>false</c>.
+    ///   <c>true</c> if <paramref name="actual"/> &gt;= <paramref name="lower"/> and <paramref name="actual"/> &lt;= <paramref name="upper"/>; otherwise, <c>false</c>.
     /// </returns>
     public static bool Between<T>(this T actual, T lower, T upper) where T : IComparable<T>
     {
