@@ -29,39 +29,31 @@ public class StringExtensionsTests
         Assert.IsTrue(value2.IsEmail());
     }
 
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("123")]
+    [DataRow("11234567890")]
+    [DataRow("12345678901")]
+    [DataRow("14345678901")]
+    [DataRow("A1234567890")]
+    public void IsChineseMobileWithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsChineseMobile());
+    }
+
+    [DataTestMethod]
+    [DataRow("13566788990")]
+    [DataRow("15890099000")]
+    [DataRow("17777788999")]
+    public void IsChineseMobileWithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsChineseMobile());
+    }
+
     /*
     
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsEmailWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsEmail());
-    }
-
-    [TestMethod]
-    public void IsChineseMobileShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue1339652435";
-
-        // Act
-        var result = value.IsChineseMobile();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsChineseMobileWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsChineseMobile());
-    }
 
     [TestMethod]
     public void IsUrlShouldWorksCorrectly()
