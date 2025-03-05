@@ -6,19 +6,6 @@ namespace System.Extensions.UnitTests.System;
 public class StringExtensionsTests
 {
     [DataTestMethod]
-    [DataRow(null, "1")]
-    [DataRow("", "1kdfdsd")]
-    [DataRow("   ", "你好呀")]
-    public void IsNullOrBlankShouldWorksCorrectly(string value1, string value2)
-    {
-        Assert.IsTrue(value1.IsNullOrBlank());
-        Assert.IsTrue(value2.IsNotNullOrBlank());
-
-        string inVisibleString = new(StringExtensions.invisiableCharacters);
-        Assert.IsTrue(inVisibleString.IsNullOrBlank());
-    }
-
-    [DataTestMethod]
     [DataRow(null, "34candybox@net.com")]
     [DataRow("", "candy.box@net.com")]
     [DataRow("  ", "1candy-box@net.com")]

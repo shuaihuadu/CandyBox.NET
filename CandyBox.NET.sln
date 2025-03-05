@@ -5,42 +5,47 @@ VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{351525A5-98F2-414C-B3B2-45038C86826C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Extensions", "src\System.Extensions\System.Extensions.csproj", "{17360932-7851-4E1A-A499-60EC4572047A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2430FDAE-4C66-4B34-80D6-30CEC0E2404E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Extensions.UnitTests", "src\System.Extensions.UnitTests\System.Extensions.UnitTests.csproj", "{B5B8EE6A-F895-4475-B2BC-FF07DB636917}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{08699415-72B9-4F6B-B58F-2822D4559C87}"
 	ProjectSection(SolutionItems) = preProject
 		nuget\nuget-package.props = nuget\nuget-package.props
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdeaTech.CandyBox", "src\IdeaTech.CandyBox\IdeaTech.CandyBox.csproj", "{0882DDAF-91D3-4315-884F-FBBDA481CF60}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdeaTech.CandyBox.UnitTests", "src\IdeaTech.CandyBox.UnitTests\IdeaTech.CandyBox.UnitTests.csproj", "{56D1C6EC-7CC0-4AE6-BF19-1B6039AD5DDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Publish|Any CPU = Publish|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{17360932-7851-4E1A-A499-60EC4572047A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17360932-7851-4E1A-A499-60EC4572047A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17360932-7851-4E1A-A499-60EC4572047A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17360932-7851-4E1A-A499-60EC4572047A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5B8EE6A-F895-4475-B2BC-FF07DB636917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5B8EE6A-F895-4475-B2BC-FF07DB636917}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5B8EE6A-F895-4475-B2BC-FF07DB636917}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5B8EE6A-F895-4475-B2BC-FF07DB636917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0882DDAF-91D3-4315-884F-FBBDA481CF60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0882DDAF-91D3-4315-884F-FBBDA481CF60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0882DDAF-91D3-4315-884F-FBBDA481CF60}.Publish|Any CPU.ActiveCfg = Publish|Any CPU
+		{0882DDAF-91D3-4315-884F-FBBDA481CF60}.Publish|Any CPU.Build.0 = Publish|Any CPU
+		{0882DDAF-91D3-4315-884F-FBBDA481CF60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0882DDAF-91D3-4315-884F-FBBDA481CF60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56D1C6EC-7CC0-4AE6-BF19-1B6039AD5DDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56D1C6EC-7CC0-4AE6-BF19-1B6039AD5DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56D1C6EC-7CC0-4AE6-BF19-1B6039AD5DDC}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{56D1C6EC-7CC0-4AE6-BF19-1B6039AD5DDC}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{56D1C6EC-7CC0-4AE6-BF19-1B6039AD5DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56D1C6EC-7CC0-4AE6-BF19-1B6039AD5DDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{17360932-7851-4E1A-A499-60EC4572047A} = {351525A5-98F2-414C-B3B2-45038C86826C}
-		{B5B8EE6A-F895-4475-B2BC-FF07DB636917} = {351525A5-98F2-414C-B3B2-45038C86826C}
+		{0882DDAF-91D3-4315-884F-FBBDA481CF60} = {351525A5-98F2-414C-B3B2-45038C86826C}
+		{56D1C6EC-7CC0-4AE6-BF19-1B6039AD5DDC} = {351525A5-98F2-414C-B3B2-45038C86826C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8C792C53-2BC6-43AC-800A-35D98C57A603}

@@ -24,43 +24,13 @@ public static class StringExtensions
     #region IsXXXXXX
 
     /// <summary>
-    /// Indicates whether the specified string is null or an System.String.Empty string(Include all invisible  characters).
-    /// <param name="value">The string.</param>
-    /// <returns>true if the value parameter is null or an empty string ("") or whitespace; otherwise, false.</returns>
-    /// </summary>
-    public static bool IsNullOrBlank(this string? value)
-    {
-        if (value == null || string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
-        {
-            return true;
-        }
-
-        if (value.Trim(invisiableCharacters).Length == 0)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Indicates whether the specified string is null or an System.String.Empty string(Include all invisible  characters).
-    /// <param name="value">The string.</param>
-    /// <returns>true if the value parameter is not null or not an empty string (""); otherwise, false.</returns>
-    /// </summary>
-    public static bool IsNotNullOrBlank(this string? value)
-    {
-        return !IsNullOrBlank(value);
-    }
-
-    /// <summary>
     /// Indicates whether the specified string is a correct email address.
     /// </summary>
     /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is a correct email address; otherwise, false.</returns>
     public static bool IsEmail(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -75,7 +45,7 @@ public static class StringExtensions
     /// <returns>true if the value parameter is a correct chinese mobile phone number; otherwise, false.</returns>
     public static bool IsChineseMobile(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -84,13 +54,36 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Indicates whether the specified string is a correct uri.
+    /// Determines whether the specified check query is URL.
     /// </summary>
-    /// <param name="value">The string.</param>
-    /// <returns>true if the value parameter is a correct uri; otherwise ,false.</returns>
-    public static bool IsUrl(this string? value)
+    /// <param name="value">The value.</param>
+    /// <param name="allowQuery">if set to <c>true</c> check the query string.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified check query is URL; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsUrl(this string? value, bool allowQuery = false)
     {
-        return Uri.TryCreate(value, UriKind.Absolute, out Uri? uriResult) && uriResult.Scheme == Uri.UriSchemeHttp;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? uri) || string.IsNullOrEmpty(uri.Host))
+        {
+            return false;
+        }
+
+        if (!allowQuery && !string.IsNullOrEmpty(uri.Query))
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(uri.Fragment))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -100,7 +93,7 @@ public static class StringExtensions
     /// <returns>true if the value parameter is Chinese character; otherwise, false.</returns>
     public static bool IsHans(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -212,7 +205,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsValidCultureIdentifier(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -239,7 +232,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsByte(this string? value, NumberStyles style = NumberStyles.None)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -270,7 +263,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsShort(this string? value, NumberStyles style = NumberStyles.None)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -301,7 +294,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsInt32(this string? value, NumberStyles style = NumberStyles.None)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -332,7 +325,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsInt64(this string? value, NumberStyles style = NumberStyles.None)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -363,7 +356,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsDecimal(this string? value, NumberStyles style = NumberStyles.None)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -394,7 +387,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsFloat(this string? value, NumberStyles style = NumberStyles.None)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -426,7 +419,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsDateTime(this string? value, IFormatProvider? provider = null, DateTimeStyles styles = DateTimeStyles.None)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -459,7 +452,7 @@ public static class StringExtensions
     /// </returns>
     public static bool IsLetter(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -474,7 +467,7 @@ public static class StringExtensions
     /// <returns>True if the string is Base64-encoded; otherwise, false.</returns>
     public static bool IsBase64String(string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
@@ -506,7 +499,7 @@ public static class StringExtensions
     ///</returns>
     public static string TrimAll(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -532,7 +525,7 @@ public static class StringExtensions
     ///</returns>
     public static string TrimBlank(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -547,7 +540,7 @@ public static class StringExtensions
     /// <returns>The reversed string</returns>
     public static string Reverse(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -568,7 +561,7 @@ public static class StringExtensions
     /// <returns>The string truncated.</returns>
     public static string? Truncate(this string? value, int length, string cutOffReplacement = " ...")
     {
-        if (value.IsNullOrBlank() || value!.Length <= length)
+        if (string.IsNullOrWhiteSpace(value) || value!.Length <= length)
         {
             return value;
         }
@@ -585,7 +578,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static byte ToByte(this string? value)
     {
-        if (!value.IsNullOrBlank() && byte.TryParse(value, out byte result))
+        if (!string.IsNullOrWhiteSpace(value) && byte.TryParse(value, out byte result))
         {
             return result;
         }
@@ -601,7 +594,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static short ToInt16(this string? value)
     {
-        if (!value.IsNullOrBlank() && short.TryParse(value, out short result))
+        if (!string.IsNullOrWhiteSpace(value) && short.TryParse(value, out short result))
         {
             return result;
         }
@@ -618,7 +611,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static int ToInt32(this string? value)
     {
-        if (!value.IsNullOrBlank() && int.TryParse(value, out int result))
+        if (!string.IsNullOrWhiteSpace(value) && int.TryParse(value, out int result))
         {
             return result;
         }
@@ -634,7 +627,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static long ToInt64(this string? value)
     {
-        if (!value.IsNullOrBlank() && long.TryParse(value, out long result))
+        if (!string.IsNullOrWhiteSpace(value) && long.TryParse(value, out long result))
         {
             return result;
         }
@@ -652,7 +645,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static T ToEnum<T>(this string? value, bool ignoreCase = true)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             throw new ArgumentNullException(nameof(value), "Must specify valid information for parsing in the string.");
         }
@@ -676,7 +669,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static Guid? ToGuid(this string? value, string format = "D")
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
@@ -707,7 +700,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentException">When convert faild.</exception>
     public static DateTime? ToDateTimeWithPartten(this string? dateTime, string pattern = DateTimeExtensionConstants.DEFAULT_DATE_FORMAT_PARTTEN, DateTime? defaultValue = null, IFormatProvider? formatProvider = null)
     {
-        if (dateTime.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(dateTime))
         {
             return defaultValue;
         }
@@ -732,7 +725,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string? ToSafeFileName(this string? value, char replacement = '_')
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
@@ -755,7 +748,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string? ToSafeFilePath(this string? value, char replacement = '_')
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
@@ -778,7 +771,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static decimal? ToDecimal(this string? value, decimal? defaultValue = null)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
@@ -798,7 +791,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string ToUTF8(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -815,7 +808,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string FirstCharToUpper(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -830,13 +823,14 @@ public static class StringExtensions
 
     /// <summary>
     /// Replaces the all special sharacters in <paramref name="value"/> with <paramref name="replacement"/>.
+    /// Only remain the letter and digital.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="replacement">The replacement.</param>
     /// <returns></returns>
     public static string ReplaceSpecialSharacters(this string? value, char replacement = char.MinValue)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -870,7 +864,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string GetFullChinesePhoneticAlphabet(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -885,7 +879,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string HtmlDecode(this string value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -900,7 +894,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string HtmlEncode(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -915,7 +909,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string UrlDecode(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -930,7 +924,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string UrlEncode(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -945,7 +939,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string RemoveNewLines(this string? value)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
@@ -959,9 +953,9 @@ public static class StringExtensions
     /// <param name="base64String">The Base64 encoded string to decode.</param>
     /// <param name="encoding">The encoding to use for the decoded string. If null, use UTF8.</param>
     /// <returns>The decoded string.</returns>
-    public static string Base64Decode(this string? base64String, Encoding? encoding = null)
+    public static string FromBase64String(this string? base64String, Encoding? encoding = null)
     {
-        if (base64String.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(base64String))
         {
             return string.Empty;
         }
@@ -981,9 +975,9 @@ public static class StringExtensions
     /// <param name="value">The input string to be encoded.</param>
     /// <param name="encoding">The encoding to use for the decoded string. If null, use UTF8.</param>
     /// <returns>The Base64 encoded string.</returns>
-    public static string Base64Encode(string? value, Encoding? encoding = null)
+    public static string ToBase64String(string? value, Encoding? encoding = null)
     {
-        if (value.IsNullOrBlank())
+        if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
