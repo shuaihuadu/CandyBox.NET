@@ -3,7 +3,10 @@
 // Used for compatibility with System.Linq.Async Nuget pkg
 namespace System.Linq;
 
-internal static class AsyncEnumerable
+/// <summary>
+/// The  System.Linq.Async extensions.
+/// </summary>
+public static class AsyncEnumerable
 {
     public static IAsyncEnumerable<T> Empty<T>() => EmptyAsyncEnumerable<T>.Instance;
 
