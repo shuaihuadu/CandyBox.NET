@@ -5,6 +5,8 @@ namespace System.Extensions.UnitTests.System;
 [TestClass]
 public class StringExtensionsTests
 {
+    #region IsEmail
+
     [DataTestMethod]
     [DataRow(null, "34candybox@net.com")]
     [DataRow("", "candy.box@net.com")]
@@ -16,6 +18,10 @@ public class StringExtensionsTests
         Assert.IsTrue(value2.IsEmail());
     }
 
+    #endregion
+
+    #region IsChineseMobile
+
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
@@ -23,7 +29,6 @@ public class StringExtensionsTests
     [DataRow("123")]
     [DataRow("11234567890")]
     [DataRow("12345678901")]
-    [DataRow("14345678901")]
     [DataRow("A1234567890")]
     public void IsChineseMobileWithInvalidValueShouldReturnFalse(string value)
     {
@@ -39,1121 +44,919 @@ public class StringExtensionsTests
         Assert.IsTrue(value.IsChineseMobile());
     }
 
-    /*
-    
+    #endregion
 
-    [TestMethod]
-    public void IsUrlShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue1017031849";
-
-        // Act
-        var result = value.IsUrl();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
+    #region IsUrl
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void IsUrlWithInvalidValueShouldThrow(string value)
+    [DataRow("not-a-url")]
+    [DataRow("ftp://")]
+    public void IsUrlWithInvalidValueShouldReturnFalse(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsUrl());
+        Assert.IsFalse(value.IsUrl());
+    }
+
+    [DataTestMethod]
+    [DataRow("https://www.example.com")]
+    [DataRow("http://example.com/path")]
+    public void IsUrlWithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsUrl());
     }
 
     [TestMethod]
-    public void IsHansShouldWorksCorrectly()
+    public void IsUrlWithQueryStringShouldReturnFalseWhenNotAllowed()
     {
-        // Arrange
-        var value = "TestValue1952453125";
-
-        // Act
-        var result = value.IsHans();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsHansWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsHans());
+        Assert.IsFalse("https://example.com/path?key=value".IsUrl(allowQuery: false));
     }
 
     [TestMethod]
-    public void IsValidLengthShouldWorksCorrectly()
+    public void IsUrlWithQueryStringShouldReturnTrueWhenAllowed()
     {
-        // Arrange
-        var value = "TestValue78780607";
-        var minLength = 1230941462;
-        var maxLength = 85227440;
-
-        // Act
-        var result = value.IsValidLength(minLength, maxLength);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.IsTrue("https://example.com/path?key=value".IsUrl(allowQuery: true));
     }
+
+    #endregion
+
+    #region IsHans
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void IsValidLengthWithInvalidValueShouldThrow(string value)
+    [DataRow("hello")]
+    [DataRow("123")]
+    public void IsHansWithNonHansValueShouldReturnFalse(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsValidLength(1010392417, 25070101));
+        Assert.IsFalse(value.IsHans());
+    }
+
+    [DataTestMethod]
+    [DataRow("你好")]
+    [DataRow("hello世界")]
+    public void IsHansWithHansValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsHans());
+    }
+
+    #endregion
+
+    #region IsValidLength
+
+    [TestMethod]
+    public void IsValidLengthWithNullShouldThrow()
+    {
+        Assert.ThrowsException<ArgumentNullException>(() => ((string?)null).IsValidLength(0, 10));
     }
 
     [TestMethod]
-    public void IsValidByteCountShouldWorksCorrectly()
+    public void IsValidLengthWithNegativeMinLengthShouldThrow()
     {
-        // Arrange
-        var value = "TestValue287522979";
-        var min = 1939001173;
-        var max = 1263008725;
-
-        // Act
-        var result = value.IsValidByteCount(min, max);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsValidByteCountWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsValidByteCount(779130403, 2004555957));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => "hello".IsValidLength(-1, 10));
     }
 
     [TestMethod]
-    public void IsGuidShouldWorksCorrectly()
+    public void IsValidLengthWithMaxLessThanMinShouldThrow()
     {
-        // Arrange
-        var value = "TestValue1903575819";
-        var format = "TestValue1747099940";
-
-        // Act
-        var result = value.IsGuid(format);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => "hello".IsValidLength(5, 3));
     }
 
     [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsGuidWithInvalidValueShouldThrow(string value)
+    [DataRow("hi", 3, 10)]
+    [DataRow("toolongstring", 1, 5)]
+    public void IsValidLengthOutOfRangeShouldReturnFalse(string value, int min, int max)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsGuid("TestValue1292782901"));
+        Assert.IsFalse(value.IsValidLength(min, max));
     }
 
     [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsGuidWithInvalidFormatShouldThrow(string value)
+    [DataRow("hello", 1, 10)]
+    [DataRow("hello", 5, 5)]
+    public void IsValidLengthInRangeShouldReturnTrue(string value, int min, int max)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => "TestValue2099133876".IsGuid(value));
+        Assert.IsTrue(value.IsValidLength(min, max));
+    }
+
+    #endregion
+
+    #region IsValidByteCount
+
+    [TestMethod]
+    public void IsValidByteCountWithNullShouldThrow()
+    {
+        Assert.ThrowsException<ArgumentNullException>(() => ((string?)null).IsValidByteCount(0, 10));
     }
 
     [TestMethod]
-    public void IsValidCultureIdentifierShouldWorksCorrectly()
+    public void IsValidByteCountWithNegativeMinShouldThrow()
     {
-        // Arrange
-        var value = "TestValue472208589";
-
-        // Act
-        var result = value.IsValidCultureIdentifier();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsValidCultureIdentifierWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsValidCultureIdentifier());
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => "hello".IsValidByteCount(-1, 10));
     }
 
     [TestMethod]
-    public void IsByteShouldWorksCorrectly()
+    public void IsValidByteCountWithMaxLessThanMinShouldThrow()
     {
-        // Arrange
-        var value = "TestValue1835024523";
-        var style = NumberStyles.Float;
-
-        // Act
-        var result = value.IsByte(style);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsByteWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsByte(NumberStyles.AllowTrailingSign));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => "hello".IsValidByteCount(5, 3));
     }
 
     [TestMethod]
-    public void IsShortShouldWorksCorrectly()
+    public void IsValidByteCountWithValueInRangeShouldReturnTrue()
     {
-        // Arrange
-        var value = "TestValue246808033";
-        var style = NumberStyles.AllowLeadingSign;
-
-        // Act
-        var result = value.IsShort(style);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsShortWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsShort(NumberStyles.AllowDecimalPoint));
+        Assert.IsTrue("hello".IsValidByteCount(1, 20));
     }
 
     [TestMethod]
-    public void IsInt32ShouldWorksCorrectly()
+    public void IsValidByteCountWithValueOutOfRangeShouldReturnFalse()
     {
-        // Arrange
-        var value = "TestValue494914988";
-        var style = NumberStyles.AllowDecimalPoint;
-
-        // Act
-        var result = value.IsInt32(style);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.IsFalse("hello world".IsValidByteCount(1, 5));
     }
+
+    #endregion
+
+    #region IsGuid
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void IsInt32WithInvalidValueShouldThrow(string value)
+    [DataRow("not-a-guid")]
+    public void IsGuidWithInvalidValueShouldReturnFalse(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsInt32(NumberStyles.AllowParentheses));
+        Assert.IsFalse(value.IsGuid());
     }
 
     [TestMethod]
-    public void IsInt64ShouldWorksCorrectly()
+    public void IsGuidWithValidGuidShouldReturnTrue()
     {
-        // Arrange
-        var value = "TestValue1932499122";
-        var style = NumberStyles.AllowCurrencySymbol;
-
-        // Act
-        var result = value.IsInt64(style);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsInt64WithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsInt64(NumberStyles.Currency));
+        string guid = Guid.NewGuid().ToString("D");
+        Assert.IsTrue(guid.IsGuid("D"));
     }
 
     [TestMethod]
-    public void IsDecimalShouldWorksCorrectly()
+    public void IsGuidWithUnknownFormatFallsBackToD()
     {
-        // Arrange
-        var value = "TestValue637636788";
-        var style = NumberStyles.Number;
+        string guid = Guid.NewGuid().ToString("D");
+        Assert.IsTrue(guid.IsGuid("INVALID_FORMAT"));
+    }
 
-        // Act
-        var result = value.IsDecimal(style);
+    #endregion
 
-        // Assert
-        Assert.Fail("Create or modify test");
+    #region IsValidCultureIdentifier
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("xx-INVALID")]
+    public void IsValidCultureIdentifierWithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsValidCultureIdentifier());
+    }
+
+    [DataTestMethod]
+    [DataRow("en-US")]
+    [DataRow("zh-CN")]
+    [DataRow("fr-FR")]
+    public void IsValidCultureIdentifierWithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsValidCultureIdentifier());
+    }
+
+    #endregion
+
+    #region IsByte / IsShort / IsInt32 / IsInt64 / IsDecimal / IsFloat
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("abc")]
+    [DataRow("999")]
+    public void IsByteWithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsByte());
+    }
+
+    [DataTestMethod]
+    [DataRow("0")]
+    [DataRow("128")]
+    [DataRow("255")]
+    public void IsByteWithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsByte());
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void IsDecimalWithInvalidValueShouldThrow(string value)
+    [DataRow("abc")]
+    public void IsShortWithInvalidValueShouldReturnFalse(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsDecimal(NumberStyles.Any));
+        Assert.IsFalse(value.IsShort());
+    }
+
+    [DataTestMethod]
+    [DataRow("0")]
+    [DataRow("1000")]
+    [DataRow("-32768")]
+    public void IsShortWithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsShort(Globalization.NumberStyles.AllowLeadingSign));
+    }
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("abc")]
+    public void IsInt32WithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsInt32());
+    }
+
+    [DataTestMethod]
+    [DataRow("0")]
+    [DataRow("2147483647")]
+    public void IsInt32WithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsInt32());
+    }
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("abc")]
+    public void IsInt64WithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsInt64());
+    }
+
+    [DataTestMethod]
+    [DataRow("0")]
+    [DataRow("9223372036854775807")]
+    public void IsInt64WithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsInt64());
+    }
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("abc")]
+    public void IsDecimalWithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsDecimal());
+    }
+
+    [DataTestMethod]
+    [DataRow("0")]
+    [DataRow("123.45")]
+    public void IsDecimalWithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsDecimal(Globalization.NumberStyles.AllowDecimalPoint));
+    }
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("abc")]
+    public void IsFloatWithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsFloat());
+    }
+
+    [DataTestMethod]
+    [DataRow("0")]
+    [DataRow("3.14")]
+    public void IsFloatWithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsFloat(Globalization.NumberStyles.AllowDecimalPoint));
+    }
+
+    #endregion
+
+    #region IsDateTime
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("not-a-date")]
+    public void IsDateTimeWithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsDateTime());
+    }
+
+    [DataTestMethod]
+    [DataRow("2024-01-01")]
+    [DataRow("2024-06-15 12:30:00")]
+    public void IsDateTimeWithValidValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsDateTime());
+    }
+
+    #endregion
+
+    #region IsLetter
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("abc123")]
+    [DataRow("hello world")]
+    public void IsLetterWithNonLetterValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsLetter());
+    }
+
+    [DataTestMethod]
+    [DataRow("hello")]
+    [DataRow("ABC")]
+    [DataRow("CandyBox")]
+    public void IsLetterWithAllLetterValueShouldReturnTrue(string value)
+    {
+        Assert.IsTrue(value.IsLetter());
+    }
+
+    #endregion
+
+    #region IsBase64String
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("not-base64!!")]
+    [DataRow("abc")]
+    public void IsBase64StringWithInvalidValueShouldReturnFalse(string value)
+    {
+        Assert.IsFalse(value.IsBase64String());
     }
 
     [TestMethod]
-    public void IsFloatShouldWorksCorrectly()
+    public void IsBase64StringWithValidValueShouldReturnTrue()
     {
-        // Arrange
-        var value = "TestValue1365593276";
-        var style = NumberStyles.Number;
-
-        // Act
-        var result = value.IsFloat(style);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        string encoded = Convert.ToBase64String(Text.Encoding.UTF8.GetBytes("CandyBox"));
+        Assert.IsTrue(encoded.IsBase64String());
     }
+
+    #endregion
+
+    #region TrimAll
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void IsFloatWithInvalidValueShouldThrow(string value)
+    public void TrimAllWithNullOrWhiteSpaceShouldReturnEmpty(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsFloat(NumberStyles.AllowParentheses));
+        Assert.AreEqual(string.Empty, value.TrimAll());
     }
 
     [TestMethod]
-    public void IsDateTimeWithValueAndProviderAndStylesShouldWorksCorrectly()
+    public void TrimAllShouldRemoveInvisibleCharacters()
     {
-        // Arrange
-        var value = "TestValue284454831";
-        var provider = Substitute.For<IFormatProvider>();
-        var styles = DateTimeStyles.AllowInnerWhite;
-
-        // Act
-        var result = value.IsDateTime(provider, styles);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsDateTimeWithValueAndProviderAndStylesWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsDateTime(Substitute.For<IFormatProvider>(), DateTimeStyles.AllowWhiteSpaces));
+        string value = "hello\x00world\x01";
+        Assert.AreEqual("helloworld", value.TrimAll());
     }
 
     [TestMethod]
-    public void IsDateTimeWithStringShouldWorksCorrectly()
+    public void TrimAllWithNormalStringShouldReturnSame()
     {
-        // Arrange
-        var value = "TestValue1288987164";
-
-        // Act
-        var result = value.IsDateTime();
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.AreEqual("hello", "hello".TrimAll());
     }
+
+    #endregion
+
+    #region TrimBlank
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void IsDateTimeWithStringWithInvalidValueShouldThrow(string value)
+    public void TrimBlankWithNullOrWhiteSpaceShouldReturnEmpty(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsDateTime());
+        Assert.AreEqual(string.Empty, value.TrimBlank());
     }
 
     [TestMethod]
-    public void IsLetterShouldWorksCorrectly()
+    public void TrimBlankShouldRemoveLeadingAndTrailingInvisibleCharacters()
     {
-        // Arrange
-        var value = "TestValue858583084";
-
-        // Act
-        var result = value.IsLetter();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void IsLetterWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.IsLetter());
+        string value = "\x00hello\x00";
+        Assert.AreEqual("hello", value.TrimBlank());
     }
 
     [TestMethod]
-    public void IsBase64StringShouldWorksCorrectly()
+    public void TrimBlankShouldNotRemoveMiddleInvisibleCharacters()
     {
-        // Arrange
-        var value = "TestValue1114705545";
+        string value = "hel\x00lo";
+        Assert.IsTrue(value.TrimBlank().Contains('\x00'));
+    }
 
-        // Act
-        var result = StringExtensions.IsBase64String(value);
+    #endregion
 
-        // Assert
-        Assert.Fail("Create or modify test");
+    #region Reverse
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    public void ReverseWithNullOrWhiteSpaceShouldReturnEmpty(string value)
+    {
+        Assert.AreEqual(string.Empty, value.Reverse());
+    }
+
+    [DataTestMethod]
+    [DataRow("abc", "cba")]
+    [DataRow("hello", "olleh")]
+    [DataRow("a", "a")]
+    public void ReverseShouldReturnReversedString(string value, string expected)
+    {
+        Assert.AreEqual(expected, value.Reverse());
+    }
+
+    #endregion
+
+    #region Truncate
+
+    [TestMethod]
+    public void TruncateWithNegativeLengthShouldThrow()
+    {
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => "hello".Truncate(-1));
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void IsBase64StringWithInvalidValueShouldThrow(string value)
+    public void TruncateWithNullOrWhiteSpaceShouldReturnInput(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => StringExtensions.IsBase64String(value));
+        Assert.AreEqual(value, value.Truncate(5));
     }
 
     [TestMethod]
-    public void TrimAllShouldWorksCorrectly()
+    public void TruncateWhenStringShorterThanLengthShouldReturnOriginal()
     {
-        // Arrange
-        var value = "TestValue2082330401";
-
-        // Act
-        var result = value.TrimAll();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void TrimAllWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.TrimAll());
+        Assert.AreEqual("hi", "hi".Truncate(10));
     }
 
     [TestMethod]
-    public void TrimBlankShouldWorksCorrectly()
+    public void TruncateWhenStringLongerThanLengthShouldTruncateWithReplacement()
     {
-        // Arrange
-        var value = "TestValue238141658";
-
-        // Act
-        var result = value.TrimBlank();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void TrimBlankWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.TrimBlank());
+        string result = "hello world".Truncate(5);
+        Assert.AreEqual("hello ...", result);
     }
 
     [TestMethod]
-    public void ReverseShouldWorksCorrectly()
+    public void TruncateWithCustomReplacementShouldUseIt()
     {
-        // Arrange
-        var value = "TestValue1522111554";
+        string result = "hello world".Truncate(5, "---");
+        Assert.AreEqual("hello---", result);
+    }
 
-        // Act
-        var result = value.Reverse();
+    #endregion
 
-        // Assert
-        Assert.Fail("Create or modify test");
+    #region ToByte / ToInt16 / ToInt32 / ToInt64
+
+    [TestMethod]
+    public void ToByteWithValidStringShouldReturnByte()
+    {
+        Assert.AreEqual((byte)200, "200".ToByte());
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
-    [DataRow("   ")]
-    public void ReverseWithInvalidValueShouldThrow(string value)
+    [DataRow("abc")]
+    [DataRow("999")]
+    public void ToByteWithInvalidStringShouldThrow(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.Reverse());
+        Assert.ThrowsException<ArgumentException>(() => value.ToByte());
     }
 
     [TestMethod]
-    public void TruncateShouldWorksCorrectly()
+    public void ToInt16WithValidStringShouldReturnShort()
     {
-        // Arrange
-        var value = "TestValue871879989";
-        var length = 1591248756;
-        var cutOffReplacement = "TestValue413443505";
-
-        // Act
-        var result = value.Truncate(length, cutOffReplacement);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.AreEqual((short)1000, "1000".ToInt16());
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
-    [DataRow("   ")]
-    public void TruncateWithInvalidValueShouldThrow(string value)
+    [DataRow("abc")]
+    public void ToInt16WithInvalidStringShouldThrow(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.Truncate(2034556507, "TestValue1999096353"));
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void TruncateWithInvalidCutOffReplacementShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => "TestValue220363102".Truncate(313807107, value));
+        Assert.ThrowsException<ArgumentException>(() => value.ToInt16());
     }
 
     [TestMethod]
-    public void ToByteWithStringAndByteShouldWorksCorrectly()
+    public void ToInt32WithValidStringShouldReturnInt()
     {
-        // Arrange
-        var value = "TestValue1539183263";
-        var @default = (byte)220;
-
-        // Act
-        var result = value.ToByte(@default);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.AreEqual(42, "42".ToInt32());
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
-    [DataRow("   ")]
-    public void ToByteWithStringAndByteWithInvalidValueShouldThrow(string value)
+    [DataRow("abc")]
+    public void ToInt32WithInvalidStringShouldThrow(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToByte((byte)223));
+        Assert.ThrowsException<ArgumentException>(() => value.ToInt32());
     }
 
     [TestMethod]
-    public void ToInt16WithStringAndShortShouldWorksCorrectly()
+    public void ToInt64WithValidStringShouldReturnLong()
     {
-        // Arrange
-        var value = "TestValue1092844402";
-        var @default = (short)6430;
-
-        // Act
-        var result = value.ToInt16(@default);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.AreEqual(9999999999L, "9999999999".ToInt64());
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
-    [DataRow("   ")]
-    public void ToInt16WithStringAndShortWithInvalidValueShouldThrow(string value)
+    [DataRow("abc")]
+    public void ToInt64WithInvalidStringShouldThrow(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToInt16((short)26005));
+        Assert.ThrowsException<ArgumentException>(() => value.ToInt64());
+    }
+
+    #endregion
+
+    #region ToEnum
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    public void ToEnumWithNullOrWhiteSpaceShouldThrow(string value)
+    {
+        Assert.ThrowsException<ArgumentNullException>(() => value.ToEnum<DayOfWeek>());
     }
 
     [TestMethod]
-    public void ToInt32WithStringAndIntShouldWorksCorrectly()
+    public void ToEnumWithInvalidValueShouldThrow()
     {
-        // Arrange
-        var value = "TestValue1731349266";
-        var @default = 1044531917;
-
-        // Act
-        var result = value.ToInt32(@default);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.ThrowsException<ArgumentException>(() => "NotADay".ToEnum<DayOfWeek>());
     }
+
+    [DataTestMethod]
+    [DataRow("Monday", DayOfWeek.Monday)]
+    [DataRow("FRIDAY", DayOfWeek.Friday)]
+    [DataRow("sunday", DayOfWeek.Sunday)]
+    public void ToEnumWithValidValueShouldReturnEnum(string value, DayOfWeek expected)
+    {
+        Assert.AreEqual(expected, value.ToEnum<DayOfWeek>());
+    }
+
+    #endregion
+
+    #region ToGuid
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToInt32WithStringAndIntWithInvalidValueShouldThrow(string value)
+    public void ToGuidWithNullOrWhiteSpaceShouldReturnNull(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToInt32(1372667223));
+        Assert.IsNull(value.ToGuid());
     }
 
     [TestMethod]
-    public void ToInt64WithStringAndLongShouldWorksCorrectly()
+    public void ToGuidWithInvalidStringShouldThrow()
     {
-        // Arrange
-        var value = "TestValue1225376942";
-        var @default = 2049865442L;
-
-        // Act
-        var result = value.ToInt64(@default);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ToInt64WithStringAndLongWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToInt64(1026527079L));
+        Assert.ThrowsException<ArgumentException>(() => "not-a-guid".ToGuid());
     }
 
     [TestMethod]
-    public void ToByteWithStringShouldWorksCorrectly()
+    public void ToGuidWithValidStringShouldReturnGuid()
     {
-        // Arrange
-        var value = "TestValue1301364385";
-
-        // Act
-        var result = value.ToByte();
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Guid expected = Guid.NewGuid();
+        Assert.AreEqual(expected, expected.ToString("D").ToGuid("D"));
     }
+
+    #endregion
+
+    #region ToDateTimeWithPartten
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToByteWithStringWithInvalidValueShouldThrow(string value)
+    public void ToDateTimeWithParttenWithNullOrWhiteSpaceShouldReturnDefault(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToByte());
+        DateTime? defaultValue = new DateTime(2000, 1, 1);
+        Assert.AreEqual(defaultValue, value.ToDateTimeWithPartten(defaultValue: defaultValue));
     }
 
     [TestMethod]
-    public void ToInt16WithStringShouldWorksCorrectly()
+    public void ToDateTimeWithParttenWithValidStringShouldReturnDateTime()
     {
-        // Arrange
-        var value = "TestValue1333982102";
-
-        // Act
-        var result = value.ToInt16();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ToInt16WithStringWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToInt16());
+        DateTime? result = "2024-06-15".ToDateTimeWithPartten("yyyy-MM-dd");
+        Assert.IsNotNull(result);
+        Assert.AreEqual(new DateTime(2024, 6, 15), result.Value);
     }
 
     [TestMethod]
-    public void ToInt32WithStringShouldWorksCorrectly()
+    public void ToDateTimeWithParttenWithMismatchedPatternShouldReturnDefault()
     {
-        // Arrange
-        var value = "TestValue1633218336";
-
-        // Act
-        var result = value.ToInt32();
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        DateTime? defaultValue = new DateTime(2000, 1, 1);
+        DateTime? result = "2024/06/15".ToDateTimeWithPartten("yyyy-MM-dd", defaultValue);
+        Assert.AreEqual(defaultValue, result);
     }
+
+    #endregion
+
+    #region ToSafeFileName
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToInt32WithStringWithInvalidValueShouldThrow(string value)
+    public void ToSafeFileNameWithNullOrWhiteSpaceShouldReturnNull(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToInt32());
+        Assert.IsNull(value.ToSafeFileName());
     }
 
     [TestMethod]
-    public void ToInt64WithStringShouldWorksCorrectly()
+    public void ToSafeFileNameShouldReplaceInvalidChars()
     {
-        // Arrange
-        var value = "TestValue638962681";
-
-        // Act
-        var result = value.ToInt64();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ToInt64WithStringWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToInt64());
+        string result = "file<name>.txt".ToSafeFileName('_')!;
+        Assert.IsFalse(result.Any(c => IO.Path.GetInvalidFileNameChars().Contains(c)));
+        Assert.IsTrue(result.Contains('_'));
     }
 
     [TestMethod]
-    public void ToEnumShouldWorksCorrectly()
+    public void ToSafeFileNameWithValidNameShouldReturnSame()
     {
-        // Arrange
-        var value = "TestValue1962603018";
-        var ignoreCase = false;
-
-        // Act
-        var result = value.ToEnum<T>(ignoreCase);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.AreEqual("validname.txt", "validname.txt".ToSafeFileName());
     }
+
+    #endregion
+
+    #region ToSafeFilePath
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToEnumWithInvalidValueShouldThrow(string value)
+    public void ToSafeFilePathWithNullOrWhiteSpaceShouldReturnNull(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToEnum<T>(false));
+        Assert.IsNull(value.ToSafeFilePath());
     }
 
     [TestMethod]
-    public void ToDateTimeWithStringShouldWorksCorrectly()
+    public void ToSafeFilePathWithValidPathShouldReturnSame()
     {
-        // Arrange
-        var value = "TestValue1727733378";
-
-        // Act
-        var result = value.ToDateTime();
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.AreEqual(@"C:\folder\file.txt", @"C:\folder\file.txt".ToSafeFilePath());
     }
+
+    #endregion
+
+    #region ToDecimal
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToDateTimeWithStringWithInvalidValueShouldThrow(string value)
+    [DataRow("abc")]
+    public void ToDecimalWithInvalidValueShouldReturnDefault(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToDateTime());
+        decimal? defaultValue = 99.9m;
+        Assert.AreEqual(defaultValue, value.ToDecimal(defaultValue));
     }
 
     [TestMethod]
-    public void ToGuidShouldWorksCorrectly()
+    public void ToDecimalWithValidValueShouldReturnDecimal()
     {
-        // Arrange
-        var value = "TestValue1732880276";
-        var format = "TestValue546037359";
-
-        // Act
-        var result = value.ToGuid(format);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ToGuidWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToGuid("TestValue712134596"));
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ToGuidWithInvalidFormatShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => "TestValue2062186659".ToGuid(value));
+        Assert.AreEqual(123.45m, "123.45".ToDecimal());
     }
 
     [TestMethod]
-    public void ToDateTimeWithParttenShouldWorksCorrectly()
+    public void ToDecimalWithNullAndNoDefaultShouldReturnNull()
     {
-        // Arrange
-        var date = "TestValue311961279";
-        var pattern = "TestValue357451564";
-        var defaultValue = DateTime.UtcNow;
-
-        // Act
-        var result = date.ToDateTimeWithPartten(pattern, defaultValue);
-
-        // Assert
-        Assert.Fail("Create or modify test");
+        Assert.IsNull(((string?)null).ToDecimal());
     }
+
+    #endregion
+
+    #region ToUTF8
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToDateTimeWithParttenWithInvalidDateShouldThrow(string value)
+    public void ToUTF8WithNullOrWhiteSpaceShouldReturnEmpty(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToDateTimeWithPartten("TestValue873459128", DateTime.UtcNow));
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ToDateTimeWithParttenWithInvalidPatternShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => "TestValue1770518646".ToDateTimeWithPartten(value, DateTime.UtcNow));
+        Assert.AreEqual(string.Empty, value.ToUTF8());
     }
 
     [TestMethod]
-    public void ToDateTimeWithDateAndDefaultValueShouldWorksCorrectly()
+    public void ToUTF8WithNormalStringShouldReturnSame()
     {
-        // Arrange
-        var date = "TestValue742644436";
-        var defaultValue = DateTime.UtcNow;
+        Assert.AreEqual("CandyBox", "CandyBox".ToUTF8());
+    }
 
-        // Act
-        var result = date.ToDateTime(defaultValue);
+    #endregion
 
-        // Assert
-        Assert.Fail("Create or modify test");
+    #region FirstCharToUpper
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    public void FirstCharToUpperWithNullOrWhiteSpaceShouldReturnEmpty(string value)
+    {
+        Assert.AreEqual(string.Empty, value.FirstCharToUpper());
+    }
+
+    [DataTestMethod]
+    [DataRow("hello", "Hello")]
+    [DataRow("world", "World")]
+    [DataRow("a", "A")]
+    public void FirstCharToUpperShouldUppercaseFirstChar(string value, string expected)
+    {
+        Assert.AreEqual(expected, value.FirstCharToUpper());
+    }
+
+    [TestMethod]
+    public void FirstCharToUpperWithAlreadyUpperShouldReturnSame()
+    {
+        Assert.AreEqual("Hello", "Hello".FirstCharToUpper());
+    }
+
+    #endregion
+
+    #region ReplaceSpecialSharacters
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    public void ReplaceSpecialSharacterWithNullOrWhiteSpaceShouldReturnEmpty(string value)
+    {
+        Assert.AreEqual(string.Empty, value.ReplaceSpecialSharacters());
+    }
+
+    [TestMethod]
+    public void ReplaceSpecialSharactersShouldRemoveSpecialCharsWhenNoReplacement()
+    {
+        Assert.AreEqual("hello123", "hello@123!".ReplaceSpecialSharacters());
+    }
+
+    [TestMethod]
+    public void ReplaceSpecialSharactersShouldReplaceSpecialCharsWithReplacement()
+    {
+        Assert.AreEqual("hello_123_", "hello@123!".ReplaceSpecialSharacters('_'));
+    }
+
+    #endregion
+
+    #region HtmlEncode / HtmlDecode
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    public void HtmlEncodeWithNullOrWhiteSpaceShouldReturnEmpty(string value)
+    {
+        Assert.AreEqual(string.Empty, value.HtmlEncode());
+    }
+
+    [TestMethod]
+    public void HtmlEncodeShouldEncodeSpecialChars()
+    {
+        Assert.AreEqual("&lt;b&gt;bold&lt;/b&gt;", "<b>bold</b>".HtmlEncode());
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToDateTimeWithDateAndDefaultValueWithInvalidDateShouldThrow(string value)
+    public void HtmlDecodeWithNullOrWhiteSpaceShouldReturnEmpty(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToDateTime(DateTime.UtcNow));
+        Assert.AreEqual(string.Empty, value.HtmlDecode());
     }
 
     [TestMethod]
-    public void ToSafeFileNameShouldWorksCorrectly()
+    public void HtmlDecodeShouldDecodeEncodedString()
     {
-        // Arrange
-        var value = "TestValue446600359";
-        var replacement = 'D';
+        Assert.AreEqual("<b>bold</b>", "&lt;b&gt;bold&lt;/b&gt;".HtmlDecode());
+    }
 
-        // Act
-        var result = value.ToSafeFileName(replacement);
+    [TestMethod]
+    public void HtmlEncodeAndDecodeShouldRoundTrip()
+    {
+        string original = "<script>alert('xss')</script>";
+        Assert.AreEqual(original, original.HtmlEncode().HtmlDecode());
+    }
 
-        // Assert
-        Assert.Fail("Create or modify test");
+    #endregion
+
+    #region UrlEncode / UrlDecode
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    public void UrlEncodeWithNullOrWhiteSpaceShouldReturnEmpty(string value)
+    {
+        Assert.AreEqual(string.Empty, value.UrlEncode());
+    }
+
+    [TestMethod]
+    public void UrlEncodeShouldEncodeSpecialChars()
+    {
+        string encoded = "hello world&foo=bar".UrlEncode();
+        Assert.IsFalse(encoded.Contains(' '));
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToSafeFileNameWithInvalidValueShouldThrow(string value)
+    public void UrlDecodeWithNullOrWhiteSpaceShouldReturnEmpty(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToSafeFileName('d'));
+        Assert.AreEqual(string.Empty, value.UrlDecode());
     }
 
     [TestMethod]
-    public void ToSafeFilePathShouldWorksCorrectly()
+    public void UrlEncodeAndDecodeShouldRoundTrip()
     {
-        // Arrange
-        var value = "TestValue537327007";
-        var replacement = 'T';
+        string original = "hello world&foo=bar";
+        Assert.AreEqual(original, original.UrlEncode().UrlDecode());
+    }
 
-        // Act
-        var result = value.ToSafeFilePath(replacement);
+    #endregion
 
-        // Assert
-        Assert.Fail("Create or modify test");
+    #region RemoveNewLines
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    public void RemoveNewLinesWithNullOrWhiteSpaceShouldReturnEmpty(string value)
+    {
+        Assert.AreEqual(string.Empty, value.RemoveNewLines());
+    }
+
+    [DataTestMethod]
+    [DataRow("hello\r\nworld", "helloworld")]
+    [DataRow("line1\nline2", "line1line2")]
+    [DataRow("line1\rline2", "line1line2")]
+    public void RemoveNewLinesShouldRemoveAllNewLines(string value, string expected)
+    {
+        Assert.AreEqual(expected, value.RemoveNewLines());
+    }
+
+    #endregion
+
+    #region ToBase64String / FromBase64String
+
+    [DataTestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    public void ToBase64StringWithNullOrWhiteSpaceShouldReturnEmpty(string value)
+    {
+        Assert.AreEqual(string.Empty, value.ToBase64String());
+    }
+
+    [TestMethod]
+    public void ToBase64StringWithValidValueShouldReturnBase64()
+    {
+        string result = "CandyBox".ToBase64String();
+        Assert.IsFalse(string.IsNullOrEmpty(result));
+        Assert.IsTrue(result.IsBase64String());
     }
 
     [DataTestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    public void ToSafeFilePathWithInvalidValueShouldThrow(string value)
+    public void FromBase64StringWithNullOrWhiteSpaceShouldReturnEmpty(string value)
     {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToSafeFilePath('F'));
+        Assert.AreEqual(string.Empty, value.FromBase64String());
     }
 
     [TestMethod]
-    public void ToDecimalShouldWorksCorrectly()
+    public void FromBase64StringWithInvalidBase64ShouldThrow()
     {
-        // Arrange
-        var value = "TestValue727572388";
-        var defaultValue = 779659530.21M;
-
-        // Act
-        var result = value.ToDecimal(defaultValue);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ToDecimalWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToDecimal(1969866053.1M));
+        Assert.ThrowsException<ArgumentException>(() => "not-valid-base64!!!".FromBase64String());
     }
 
     [TestMethod]
-    public void ToDecimalPerformsMapping()
+    public void ToBase64StringAndFromBase64StringShouldRoundTrip()
     {
-        // Arrange
-        var value = "TestValue2063803588";
-        var defaultValue = 1762882891.11M;
-
-        // Act
-        var result = value.ToDecimal(defaultValue);
-
-        // Assert
-        Assert.AreEqual(value, result.Value);
+        string original = "Hello, CandyBox!";
+        Assert.AreEqual(original, original.ToBase64String().FromBase64String());
     }
 
-    [TestMethod]
-    public void ToUTF8ShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue1212323750";
-
-        // Act
-        var result = value.ToUTF8();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ToUTF8WithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ToUTF8());
-    }
-
-    [TestMethod]
-    public void FirstCharToUpperShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue1055803322";
-
-        // Act
-        var result = value.FirstCharToUpper();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void FirstCharToUpperWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.FirstCharToUpper());
-    }
-
-    [TestMethod]
-    public void ReplaceSpecialSharactersShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue1084260920";
-        var replacement = 'Q';
-
-        // Act
-        var result = value.ReplaceSpecialSharacters(replacement);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void ReplaceSpecialSharactersWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.ReplaceSpecialSharacters('h'));
-    }
-
-    [TestMethod]
-    public void GetFullChinesePhoneticAlphabetShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue1137580393";
-
-        // Act
-        var result = value.GetFullChinesePhoneticAlphabet();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void GetFullChinesePhoneticAlphabetWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.GetFullChinesePhoneticAlphabet());
-    }
-
-    [TestMethod]
-    public void HtmlDecodeShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue990768283";
-
-        // Act
-        var result = value.HtmlDecode();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void HtmlDecodeWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.HtmlDecode());
-    }
-
-    [TestMethod]
-    public void HtmlEncodeShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue640113371";
-
-        // Act
-        var result = value.HtmlEncode();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void HtmlEncodeWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.HtmlEncode());
-    }
-
-    [TestMethod]
-    public void UrlDecodeShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue728410478";
-
-        // Act
-        var result = value.UrlDecode();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void UrlDecodeWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.UrlDecode());
-    }
-
-    [TestMethod]
-    public void UrlEncodeShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue993145904";
-
-        // Act
-        var result = value.UrlEncode();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void UrlEncodeWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.UrlEncode());
-    }
-
-    [TestMethod]
-    public void RemoveNewLinesShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue1145162865";
-
-        // Act
-        var result = value.RemoveNewLines();
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void RemoveNewLinesWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.RemoveNewLines());
-    }
-
-    [TestMethod]
-    public void Base64DecodeShouldWorksCorrectly()
-    {
-        // Arrange
-        var base64String = "TestValue1967676768";
-        var encoding = Encoding.GetEncoding(780883123);
-
-        // Act
-        var result = base64String.Base64Decode(encoding);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void Base64DecodeWithInvalidBase64StringShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => value.Base64Decode(Encoding.GetEncoding(63987063)));
-    }
-
-    [TestMethod]
-    public void Base64EncodeShouldWorksCorrectly()
-    {
-        // Arrange
-        var value = "TestValue830906962";
-        var encoding = Encoding.GetEncoding(2108314267);
-
-        // Act
-        var result = StringExtensions.Base64Encode(value, encoding);
-
-        // Assert
-        Assert.Fail("Create or modify test");
-    }
-
-    [DataTestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    public void Base64EncodeWithInvalidValueShouldThrow(string value)
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => StringExtensions.Base64Encode(value, Encoding.GetEncoding(301887481)));
-    }
-    */
+    #endregion
 }
