@@ -5,7 +5,7 @@ namespace System;
 /// <summary>
 /// Common extensions of <see cref="string"/>.
 /// </summary>
-public static class StringExtensions
+public static partial class StringExtensions
 {
     /// <summary>
     /// The <see cref="string.Trim()"/> method only trims 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x0085, 0x2028, and 0x2029.
@@ -21,11 +21,58 @@ public static class StringExtensions
         (char)0x1d, (char)0x1e, (char)0x1f, (char)0x7f, (char)0x85, (char)0x2028, (char)0x2029
     ];
 
+    /// <summary>
+    /// A <see cref="HashSet{T}"/> of <see cref="invisiableCharacters"/> for O(1) lookup performance.
+    /// </summary>
+    private static readonly HashSet<char> invisiableCharactersSet = [.. invisiableCharacters];
+
+    /// <summary>
+    /// All valid GUID format specifiers accepted by <see cref="Guid.TryParseExact"/>.
+    /// </summary>
+    private static readonly string[] validGuidFormats = ["D", "d", "N", "n", "P", "p", "B", "b", "X", "x"];
+
+    /// <summary>
+    /// A <see cref="HashSet{T}"/> of <see cref="validGuidFormats"/> for O(1) lookup performance.
+    /// </summary>
+    private static readonly HashSet<string> validGuidFormatsSet = new(validGuidFormats, StringComparer.Ordinal);
+
+    /// <summary>
+    /// A <see cref="HashSet{T}"/> of characters that are invalid in file names, for O(1) lookup performance.
+    /// </summary>
+    private static readonly HashSet<char> invalidFileNameCharsSet = new(Path.GetInvalidFileNameChars());
+
+    /// <summary>
+    /// A <see cref="HashSet{T}"/> of characters that are invalid in file paths, for O(1) lookup performance.
+    /// </summary>
+    private static readonly HashSet<char> invalidPathCharsSet = new(Path.GetInvalidPathChars());
+
+    /// <summary>
+    /// Compiled regular expression for matching Chinese mobile phone numbers (all current 13x-19x prefixes).
+    /// </summary>
+    [GeneratedRegex(@"^1[3-9]\d{9}$")]
+    private static partial Regex ChineseMobileRegex();
+
+    /// <summary>
+    /// Compiled regular expression for matching Chinese characters (CJK Unified Ideographs U+4E00-U+9FA5).
+    /// </summary>
+    [GeneratedRegex(@"[\u4e00-\u9fa5]")]
+    private static partial Regex HansRegex();
+
+    /// <summary>
+    /// Compiled regular expression for matching strings that contain only ASCII letters.
+    /// </summary>
+    [GeneratedRegex(@"^[a-zA-Z]+$")]
+    private static partial Regex LetterRegex();
+
     #region IsXXXXXX
 
     /// <summary>
     /// Indicates whether the specified string is a correct email address.
     /// </summary>
+    /// <remarks>
+    /// Uses <see cref="System.Net.Mail.MailAddress"/> for validation, which complies with RFC 5321
+    /// and supports modern TLDs of any length (e.g., .photography, .museum).
+    /// </remarks>
     /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is a correct email address; otherwise, false.</returns>
     public static bool IsEmail(this string? value)
@@ -35,12 +82,25 @@ public static class StringExtensions
             return false;
         }
 
-        return new Regex(@"^[a-zA-Z0-9_+.-]+\@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,4}$").Match(value!).Success;
+        try
+        {
+            System.Net.Mail.MailAddress addr = new(value!);
+
+            return addr.Address == value!.Trim();
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 
     /// <summary>
     /// Indicates whether the specified string is a correct chinese mobile phone number.
     /// </summary>
+    /// <remarks>
+    /// Matches all current Chinese mobile number prefixes (13x-19x) as assigned by MIIT.
+    /// Uses pattern <c>^1[3-9]\d{9}$</c> to remain compatible with future prefix assignments.
+    /// </remarks>
     /// <param name="value">The string.</param>
     /// <returns>true if the value parameter is a correct chinese mobile phone number; otherwise, false.</returns>
     public static bool IsChineseMobile(this string? value)
@@ -50,7 +110,7 @@ public static class StringExtensions
             return false;
         }
 
-        return new Regex(@"^1(3[0-9]|4[57]|5[0-35-9]|7[0678]|8[0-9])\d{8}$").Match(value!).Success;
+        return ChineseMobileRegex().IsMatch(value!);
     }
 
     /// <summary>
@@ -87,10 +147,10 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Indicates whether the specified string is Chinese character.
+    /// Indicates whether the specified string contains at least one Chinese character (CJK Unified Ideographs U+4E00-U+9FA5).
     /// </summary>
     /// <param name="value">The string.</param>
-    /// <returns>true if the value parameter is Chinese character; otherwise, false.</returns>
+    /// <returns>true if the value parameter contains at least one Chinese character; otherwise, false.</returns>
     public static bool IsHans(this string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -98,7 +158,7 @@ public static class StringExtensions
             return false;
         }
 
-        return Regex.Match(value!, @"[\u4e00-\u9fa5]").Success;
+        return HansRegex().IsMatch(value!);
     }
 
     /// <summary>
@@ -107,28 +167,21 @@ public static class StringExtensions
     /// <param name="value">The string.</param>
     /// <param name="minLength">The min length for validate.</param>
     /// <param name="maxLength">The max length for validate.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>true if the value is valid length;otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="value"/> is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="minLength"/> is less than 0 or <paramref name="maxLength"/> is less than <paramref name="minLength"/>.</exception>
+    /// <returns>true if the value is valid length; otherwise, false.</returns>
     public static bool IsValidLength(this string? value, int minLength, int maxLength)
     {
+        ArgumentNullException.ThrowIfNull(value);
+
         if (minLength < 0)
         {
-            throw new ArgumentException("The minLength must be greater than 0.");
+            throw new ArgumentOutOfRangeException(nameof(minLength), minLength, "The minLength must be greater than or equal to 0.");
         }
 
         if (maxLength < minLength)
         {
-            throw new ArgumentException("The maxLength must be greater than the minLength.");
-        }
-
-        if (maxLength > int.MaxValue)
-        {
-            throw new ArgumentException("The minLength must be less than Int32.MaxValue.");
-        }
-
-        if (value == null)
-        {
-            throw new ArgumentException("value can not be null.");
+            throw new ArgumentOutOfRangeException(nameof(maxLength), maxLength, "The maxLength must be greater than or equal to minLength.");
         }
 
         return value.Length >= minLength && value.Length <= maxLength;
@@ -140,28 +193,21 @@ public static class StringExtensions
     /// <param name="value">The string.</param>
     /// <param name="min">The min bytes count.</param>
     /// <param name="max">The max bytes count.</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>true if the value is valid byte count;otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="value"/> is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="min"/> is less than 0 or <paramref name="max"/> is less than <paramref name="min"/>.</exception>
+    /// <returns>true if the value is valid byte count; otherwise, false.</returns>
     public static bool IsValidByteCount(this string? value, int min, int max)
     {
+        ArgumentNullException.ThrowIfNull(value);
+
         if (min < 0)
         {
-            throw new ArgumentException("min must be greater than 0.");
+            throw new ArgumentOutOfRangeException(nameof(min), min, "The min must be greater than or equal to 0.");
         }
 
         if (max < min)
         {
-            throw new ArgumentException("The max must be greater than the min.");
-        }
-
-        if (max > int.MaxValue)
-        {
-            throw new ArgumentException("The max must be less than Int32.MaxValue.");
-        }
-
-        if (value == null)
-        {
-            throw new ArgumentException("value can not be null.");
+            throw new ArgumentOutOfRangeException(nameof(max), max, "The max must be greater than or equal to min.");
         }
 
         int count = Text.Encoding.Default.GetByteCount(value);
@@ -177,23 +223,17 @@ public static class StringExtensions
     /// <returns>true if the value parameter is a correct <see cref="Guid"/>; otherwise, false.</returns>
     public static bool IsGuid(this string? value, string format = "D")
     {
-        string[] formats = ["D", "d", "N", "n", "P", "p", "B", "b", "X", "x"];
-
-        try
-        {
-            if (!formats.Contains(format))
-            {
-                format = formats[0];
-            }
-
-            Guid.ParseExact(value!, format);
-
-            return true;
-        }
-        catch (FormatException)
+        if (string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
+
+        if (!validGuidFormatsSet.Contains(format))
+        {
+            format = validGuidFormats[0];
+        }
+
+        return Guid.TryParseExact(value!, format, out _);
     }
 
     /// <summary>
@@ -237,20 +277,7 @@ public static class StringExtensions
             return false;
         }
 
-        try
-        {
-            _ = byte.Parse(value!, style);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-        catch (OverflowException)
-        {
-            return false;
-        }
+        return byte.TryParse(value!, style, provider: null, out _);
     }
 
     /// <summary>
@@ -268,20 +295,7 @@ public static class StringExtensions
             return false;
         }
 
-        try
-        {
-            _ = short.Parse(value!, style);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-        catch (OverflowException)
-        {
-            return false;
-        }
+        return short.TryParse(value!, style, provider: null, out _);
     }
 
     /// <summary>
@@ -299,20 +313,7 @@ public static class StringExtensions
             return false;
         }
 
-        try
-        {
-            _ = int.Parse(value!, style);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-        catch (OverflowException)
-        {
-            return false;
-        }
+        return int.TryParse(value!, style, provider: null, out _);
     }
 
     /// <summary>
@@ -330,20 +331,7 @@ public static class StringExtensions
             return false;
         }
 
-        try
-        {
-            _ = long.Parse(value!, style);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-        catch (OverflowException)
-        {
-            return false;
-        }
+        return long.TryParse(value!, style, provider: null, out _);
     }
 
     /// <summary>
@@ -361,20 +349,7 @@ public static class StringExtensions
             return false;
         }
 
-        try
-        {
-            _ = decimal.Parse(value!, style);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-        catch (OverflowException)
-        {
-            return false;
-        }
+        return decimal.TryParse(value!, style, provider: null, out _);
     }
 
     /// <summary>
@@ -392,20 +367,7 @@ public static class StringExtensions
             return false;
         }
 
-        try
-        {
-            _ = float.Parse(value!, style);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-        catch (OverflowException)
-        {
-            return false;
-        }
+        return float.TryParse(value!, style, provider: null, out _);
     }
 
     /// <summary>
@@ -424,23 +386,7 @@ public static class StringExtensions
             return false;
         }
 
-        try
-        {
-            if (provider.IsNull())
-            {
-                _ = DateTime.Parse(value!, CultureInfo.InvariantCulture, styles);
-            }
-            else
-            {
-                DateTime.Parse(value!, provider, styles);
-            }
-
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        return DateTime.TryParse(value!, provider ?? CultureInfo.InvariantCulture, styles, out _);
     }
 
     /// <summary>
@@ -457,7 +403,7 @@ public static class StringExtensions
             return false;
         }
 
-        return Regex.IsMatch(value!, "^[a-zA-Z]+$");
+        return LetterRegex().IsMatch(value!);
     }
 
     /// <summary>
@@ -465,9 +411,15 @@ public static class StringExtensions
     /// </summary>
     /// <param name="value">The string to check.</param>
     /// <returns>True if the string is Base64-encoded; otherwise, false.</returns>
-    public static bool IsBase64String(string? value)
+    public static bool IsBase64String(this string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        // Valid Base64-encoded strings must have a length that is a multiple of 4.
+        if (value!.Length % 4 != 0)
         {
             return false;
         }
@@ -493,9 +445,9 @@ public static class StringExtensions
     /// </summary>
     /// <param name="value">The string.</param>
     /// <returns>
-    /// The string that remains after all invisible  characters are removed from the
-    /// start and end of the current string. If no characters can be trimmed from the
-    /// current instance, the method returns the current instance unchanged.
+    /// The string that remains after all invisible characters are removed from every position in the
+    /// current string. If no characters can be trimmed from the current instance, the method returns
+    /// the current instance unchanged.
     ///</returns>
     public static string TrimAll(this string? value)
     {
@@ -504,18 +456,11 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        string result = TrimBlank(value);
-
-        foreach (char item in invisiableCharacters)
-        {
-            result = result.Replace(new string([item]), string.Empty);
-        }
-
-        return result;
+        return new string(value!.Where(c => !invisiableCharactersSet.Contains(c)).ToArray());
     }
 
     /// <summary>
-    /// Removes all leading and trailing invisible  characters from the current System.String object.
+    /// Removes all leading and trailing invisible characters from the current System.String object.
     /// </summary>
     /// <param name="value">The string.</param>
     /// <returns>
@@ -545,11 +490,11 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        char[] array = value!.ToCharArray();
-
-        Array.Reverse(array);
-
-        return new string(array);
+        return string.Create(value!.Length, value!, static (span, source) =>
+        {
+            source.AsSpan().CopyTo(span);
+            span.Reverse();
+        });
     }
 
     /// <summary>
@@ -558,24 +503,26 @@ public static class StringExtensions
     /// <param name="value">The string.</param>
     /// <param name="length">The length of remained.</param>
     /// <param name="cutOffReplacement">The replacement of the removed part of the <see cref="string"/>.</param>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="length"/> is negative.</exception>
     /// <returns>The string truncated.</returns>
     public static string? Truncate(this string? value, int length, string cutOffReplacement = " ...")
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+
         if (string.IsNullOrWhiteSpace(value) || value!.Length <= length)
         {
             return value;
         }
 
-        return $"{value.Remove(length)}{cutOffReplacement}";
+        return $"{value[..length]}{cutOffReplacement}";
     }
 
     /// <summary>
     /// Convert specified string to a <see cref="byte"/> value.
     /// </summary>
     /// <param name="value">The string.</param>
-    /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="byte"/> value.</returns>
-    /// <exception cref="ArgumentException">When convert faild.</exception>
+    /// <exception cref="ArgumentException">When convert failed.</exception>
     public static byte ToByte(this string? value)
     {
         if (!string.IsNullOrWhiteSpace(value) && byte.TryParse(value, out byte result))
@@ -583,7 +530,7 @@ public static class StringExtensions
             return result;
         }
 
-        throw new ArgumentException("The specified string is not a byte value.");
+        throw new ArgumentException("The specified string is not a byte value.", nameof(value));
     }
 
     /// <summary>
@@ -591,7 +538,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="value">The string.</param>
     /// <returns>The converted <see cref="short"/> value.</returns>
-    /// <exception cref="ArgumentException">When convert faild.</exception>
+    /// <exception cref="ArgumentException">When convert failed.</exception>
     public static short ToInt16(this string? value)
     {
         if (!string.IsNullOrWhiteSpace(value) && short.TryParse(value, out short result))
@@ -599,16 +546,15 @@ public static class StringExtensions
             return result;
         }
 
-        throw new ArgumentException("The specified string is not a short value.");
+        throw new ArgumentException("The specified string is not a short value.", nameof(value));
     }
 
     /// <summary>
     /// Convert specified string to an <see cref="int"/> value.
     /// </summary>
     /// <param name="value">The string.</param>
-    /// <exception cref="ArgumentException"></exception>
     /// <returns>The converted <see cref="int"/> value.</returns>
-    /// <exception cref="ArgumentException">When convert faild.</exception>
+    /// <exception cref="ArgumentException">When convert failed.</exception>
     public static int ToInt32(this string? value)
     {
         if (!string.IsNullOrWhiteSpace(value) && int.TryParse(value, out int result))
@@ -616,7 +562,7 @@ public static class StringExtensions
             return result;
         }
 
-        throw new ArgumentException("The specified string is not an int value.");
+        throw new ArgumentException("The specified string is not an int value.", nameof(value));
     }
 
     /// <summary>
@@ -624,7 +570,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="value">The string.</param>
     /// <returns>The converted <see cref="long"/> value.</returns>
-    /// <exception cref="ArgumentException">When convert faild.</exception>
+    /// <exception cref="ArgumentException">When convert failed.</exception>
     public static long ToInt64(this string? value)
     {
         if (!string.IsNullOrWhiteSpace(value) && long.TryParse(value, out long result))
@@ -632,7 +578,7 @@ public static class StringExtensions
             return result;
         }
 
-        throw new ArgumentException("The specified string is not a long value.");
+        throw new ArgumentException("The specified string is not a long value.", nameof(value));
     }
 
     /// <summary>
@@ -642,22 +588,20 @@ public static class StringExtensions
     /// <param name="value">The string.</param>
     /// <param name="ignoreCase">true to ignore case during the comparison; otherwise, false.</param>
     /// <returns>The converted <see cref="Enum"/> value.</returns>
-    /// <exception cref="ArgumentException">When convert faild.</exception>
-    public static T ToEnum<T>(this string? value, bool ignoreCase = true)
+    /// <exception cref="ArgumentException">When convert failed.</exception>
+    public static T ToEnum<T>(this string? value, bool ignoreCase = true) where T : struct, Enum
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new ArgumentNullException(nameof(value), "Must specify valid information for parsing in the string.");
         }
 
-        Type t = typeof(T);
-
-        if (!t.IsEnum)
+        if (Enum.TryParse<T>(value!, ignoreCase, out T result))
         {
-            throw new ArgumentException("Type provided must be an Enum.", typeof(T).Name);
+            return result;
         }
 
-        return (T)Enum.Parse(t, value!, ignoreCase);
+        throw new ArgumentException($"The value '{value}' is not a valid member of enum type {typeof(T).Name}.", nameof(value));
     }
 
     /// <summary>
@@ -666,7 +610,7 @@ public static class StringExtensions
     /// <param name="value">The string to convert.</param>
     /// <param name="format">GUID format type.</param>
     /// <returns>The converted <see cref="Guid"/> value.</returns>
-    /// <exception cref="ArgumentException">When convert faild.</exception>
+    /// <exception cref="ArgumentException">When convert failed.</exception>
     public static Guid? ToGuid(this string? value, string format = "D")
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -674,19 +618,17 @@ public static class StringExtensions
             return null;
         }
 
-        string[] formats = ["D", "d", "N", "n", "P", "p", "B", "b", "X", "x"];
-
-        if (!formats.Contains(format))
+        if (!validGuidFormatsSet.Contains(format))
         {
-            format = formats[0];
+            format = validGuidFormats[0];
         }
 
-        if (IsGuid(value, format))
+        if (Guid.TryParseExact(value!, format, out Guid result))
         {
-            return Guid.ParseExact(value!, format);
+            return result;
         }
 
-        throw new ArgumentException("Input string is not a valid GUID format.");
+        throw new ArgumentException("Input string is not a valid GUID format.", nameof(value));
     }
 
     /// <summary>
@@ -705,24 +647,20 @@ public static class StringExtensions
             return defaultValue;
         }
 
-        formatProvider ??= CultureInfo.InvariantCulture;
+        if (DateTime.TryParseExact(dateTime!, pattern, formatProvider ?? CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
+        {
+            return result;
+        }
 
-        try
-        {
-            return DateTime.ParseExact(dateTime!, pattern, formatProvider);
-        }
-        catch (Exception)
-        {
-            return defaultValue;
-        }
+        return defaultValue;
     }
 
     /// <summary>
-    /// Convert  to the <paramref name="value"/> to a safe file name.
+    /// Converts the <paramref name="value"/> to a safe file name.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <param name="replacement">The replacement</param>
-    /// <returns></returns>
+    /// <param name="replacement">The replacement character for invalid file name characters.</param>
+    /// <returns>A safe file name string, or <see langword="null"/> if <paramref name="value"/> is null or whitespace.</returns>
     public static string? ToSafeFileName(this string? value, char replacement = '_')
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -730,22 +668,26 @@ public static class StringExtensions
             return null;
         }
 
-        char[] invalidChars = Path.GetInvalidFileNameChars();
-
-        if (invalidChars.Contains(replacement))
+        if (invalidFileNameCharsSet.Contains(replacement))
         {
             throw new ArgumentException("Invalid replacement.", nameof(replacement));
         }
 
-        return invalidChars.Aggregate(value!, (accmulate, result) => (accmulate.Replace(result, '_')));
+        return string.Create(value!.Length, (Source: value!, Replacement: replacement), static (span, state) =>
+        {
+            for (int i = 0; i < state.Source.Length; i++)
+            {
+                span[i] = invalidFileNameCharsSet.Contains(state.Source[i]) ? state.Replacement : state.Source[i];
+            }
+        });
     }
 
     /// <summary>
-    /// Convert  to the <paramref name="value"/> to a safe file path.
+    /// Converts the <paramref name="value"/> to a safe file path.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <param name="replacement">The replacement</param>
-    /// <returns></returns>
+    /// <param name="replacement">The replacement character for invalid path characters.</param>
+    /// <returns>A safe file path string, or <see langword="null"/> if <paramref name="value"/> is null or whitespace.</returns>
     public static string? ToSafeFilePath(this string? value, char replacement = '_')
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -753,18 +695,22 @@ public static class StringExtensions
             return null;
         }
 
-        char[] invalidChars = Path.GetInvalidPathChars();
-
-        if (invalidChars.Contains(replacement))
+        if (invalidPathCharsSet.Contains(replacement))
         {
             throw new ArgumentException("Invalid replacement.", nameof(replacement));
         }
 
-        return invalidChars.Aggregate(value!, (accmulate, result) => (accmulate.Replace(result, '_')));
+        return string.Create(value!.Length, (Source: value!, Replacement: replacement), static (span, state) =>
+        {
+            for (int i = 0; i < state.Source.Length; i++)
+            {
+                span[i] = invalidPathCharsSet.Contains(state.Source[i]) ? state.Replacement : state.Source[i];
+            }
+        });
     }
 
     /// <summary>
-    /// Conver the <paramref name="value"/> to decimal.
+    /// Converts the <paramref name="value"/> to decimal.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="defaultValue">If specified string is not decimal,then return the default value.</param>
@@ -773,7 +719,7 @@ public static class StringExtensions
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return null;
+            return defaultValue;
         }
 
         if (decimal.TryParse(value, out decimal result))
@@ -785,10 +731,15 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Set the <paramref name="value"/> to the utf-8 encoding.
+    /// Re-encodes the <paramref name="value"/> through a UTF-8 round-trip (string → UTF-8 bytes → string).
     /// </summary>
+    /// <remarks>
+    /// Because .NET strings are always valid Unicode, this operation is a no-op for well-formed input.
+    /// It can be used to strip characters that cannot be represented in UTF-8, such as lone surrogates,
+    /// by relying on the encoder's substitution fallback behaviour.
+    /// </remarks>
     /// <param name="value">The value.</param>
-    /// <returns></returns>
+    /// <returns>The UTF-8 round-tripped string, or <see cref="string.Empty"/> if <paramref name="value"/> is null or whitespace.</returns>
     public static string ToUTF8(this string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -813,12 +764,16 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (value!.Length > 1)
+        if (value!.Length == 1)
         {
-            return char.ToUpper(value[0], CultureInfo.CurrentCulture) + value.Substring(1);
+            return value.ToUpper(CultureInfo.CurrentCulture);
         }
 
-        return value.ToUpper(CultureInfo.CurrentCulture);
+        return string.Create(value.Length, (value, CultureInfo.CurrentCulture), static (span, state) =>
+        {
+            span[0] = char.ToUpper(state.value[0], state.CurrentCulture);
+            state.value.AsSpan(1).CopyTo(span[1..]);
+        });
     }
 
     /// <summary>
@@ -835,26 +790,18 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        char[] chars = new char[value!.Length];
-
-        for (int i = 0; i < value.Length; i++)
-        {
-            if (!value[i].IsLetterOrDigit())
-            {
-                chars[i] = replacement;
-            }
-            else
-            {
-                chars[i] = value[i];
-            }
-        }
-
         if (replacement == char.MinValue)
         {
-            return new string(chars.Where(x => x != replacement).ToArray());
+            return new string(value!.Where(c => c.IsLetterOrDigit()).ToArray());
         }
 
-        return new string(chars);
+        return string.Create(value!.Length, (Source: value!, Replacement: replacement), static (span, state) =>
+        {
+            for (int i = 0; i < state.Source.Length; i++)
+            {
+                span[i] = state.Source[i].IsLetterOrDigit() ? state.Source[i] : state.Replacement;
+            }
+        });
     }
 
     /// <summary>
@@ -877,14 +824,14 @@ public static class StringExtensions
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns></returns>
-    public static string HtmlDecode(this string value)
+    public static string HtmlDecode(this string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return string.Empty;
         }
 
-        return HttpUtility.HtmlDecode(value);
+        return HttpUtility.HtmlDecode(value!);
     }
 
     /// <summary>
@@ -944,7 +891,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        return value!.Replace("\r\n", string.Empty).Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(Environment.NewLine, string.Empty);
+        return value!.Replace("\r\n", string.Empty).Replace("\r", string.Empty).Replace("\n", string.Empty);
     }
 
     /// <summary>
@@ -962,11 +909,16 @@ public static class StringExtensions
 
         encoding ??= Encoding.UTF8;
 
-        byte[] decodedBytes = Convert.FromBase64String(base64String!);
+        try
+        {
+            byte[] decodedBytes = Convert.FromBase64String(base64String!);
 
-        string decodedString = encoding.GetString(decodedBytes);
-
-        return decodedString;
+            return encoding.GetString(decodedBytes);
+        }
+        catch (FormatException)
+        {
+            throw new ArgumentException("The specified string is not a valid Base64-encoded string.", nameof(base64String));
+        }
     }
 
     /// <summary>
@@ -975,7 +927,7 @@ public static class StringExtensions
     /// <param name="value">The input string to be encoded.</param>
     /// <param name="encoding">The encoding to use for the decoded string. If null, use UTF8.</param>
     /// <returns>The Base64 encoded string.</returns>
-    public static string ToBase64String(string? value, Encoding? encoding = null)
+    public static string ToBase64String(this string? value, Encoding? encoding = null)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -984,7 +936,7 @@ public static class StringExtensions
 
         encoding ??= Encoding.UTF8;
 
-        byte[] bytes = Encoding.UTF8.GetBytes(value!);
+        byte[] bytes = encoding.GetBytes(value!);
 
         return Convert.ToBase64String(bytes);
     }

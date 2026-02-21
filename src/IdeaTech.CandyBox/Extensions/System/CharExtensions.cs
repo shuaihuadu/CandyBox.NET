@@ -15,23 +15,23 @@ public static class CharExtensions
     public static bool IsDigit(this char c) => char.IsDigit(c);
 
     /// <summary>
-    /// Indicates whether the specified <see cref="char"/> is a  lower case ASCII letter.
+    /// Indicates whether the specified <see cref="char"/> is a lower case letter.
     /// </summary>
     /// <param name="c">The character for test.</param>
-    /// <returns>true if the character is a lower case ASCII letter;otherwise, false.</returns>
+    /// <returns>true if the character is a lower case letter; otherwise, false.</returns>
     public static bool IsLower(this char c) => char.IsLower(c);
 
     /// <summary>
-    /// Indicates whether the specified <see cref="char"/> is an upper case ASCII letter.
+    /// Indicates whether the specified <see cref="char"/> is an upper case letter.
     /// </summary>
     /// <param name="c">The character for test.</param>
-    /// <returns>true if the character is an upper case ASCII letter;otherwise, false.</returns>
+    /// <returns>true if the character is an upper case letter; otherwise, false.</returns>
     public static bool IsUpper(this char c) => char.IsUpper(c);
 
     /// <summary>
-    /// Indicates whether the specified character is an ASCII letter or digit.
+    /// Indicates whether the specified character is a letter or digit.
     /// </summary>
     /// <param name="c">The character for test.</param>
-    /// <returns>true if the character is an ASCII letter or digit;otherwise, false.</returns>
+    /// <returns>true if the character is a letter or digit; otherwise, false.</returns>
     public static bool IsLetterOrDigit(this char c) => char.IsLetterOrDigit(c);
 }

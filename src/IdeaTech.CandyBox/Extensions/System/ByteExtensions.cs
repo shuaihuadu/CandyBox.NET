@@ -13,7 +13,7 @@ public static class ByteExtensions
     /// <typeparam name="T">The type of enum.</typeparam>
     /// <param name="value">The byte value.</param>
     /// <returns>The converted <see cref="Enum"/> value.</returns>
-    public static T ToEnum<T>(this byte value) where T : struct
+    public static T ToEnum<T>(this byte value) where T : struct, Enum
     {
         return (T)Enum.ToObject(typeof(T), value);
     }

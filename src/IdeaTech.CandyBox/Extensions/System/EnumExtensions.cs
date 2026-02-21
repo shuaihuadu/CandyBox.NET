@@ -12,7 +12,7 @@ public static class EnumExtensions
     /// </summary>
     /// <param name="enum">The enum.</param>
     /// <param name="value">The int value to compare to the <paramref name="enum"/>.</param>
-    /// <returns>true if the value parameter is the same as the value of <paramref name="enum"/>;othervise, false.</returns>
+    /// <returns>true if the value parameter is the same as the value of <paramref name="enum"/>; otherwise, false.</returns>
     public static bool Equals(this Enum @enum, int value) => @enum.IntValue() == value;
 
     /// <summary>
@@ -20,7 +20,7 @@ public static class EnumExtensions
     /// </summary>
     /// <param name="enum">The enum.</param>
     /// <param name="value">The byte value to compare to the <paramref name="enum"/>.</param>
-    /// <returns>true if the value parameter is the same as the value of <paramref name="enum"/>;othervise, false.</returns>
+    /// <returns>true if the value parameter is the same as the value of <paramref name="enum"/>; otherwise, false.</returns>
     public static bool Equals(this Enum @enum, byte value) => @enum.ByteValue() == value;
 
     /// <summary>
@@ -28,7 +28,7 @@ public static class EnumExtensions
     /// </summary>
     /// <param name="enum">The enum.</param>
     /// <param name="value">The byte value to compare to the <paramref name="enum"/>.</param>
-    /// <returns>true if the value parameter is the same as the value of <paramref name="enum"/>;othervise, false.</returns>
+    /// <returns>true if the value parameter is the same as the value of <paramref name="enum"/>; otherwise, false.</returns>
     public static bool Equals(this Enum @enum, string value) => @enum.ToString().Equals(value.TrimBlank(), StringComparison.OrdinalIgnoreCase);
 
     /// <summary>

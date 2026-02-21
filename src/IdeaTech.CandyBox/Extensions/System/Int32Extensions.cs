@@ -13,7 +13,7 @@ public static class Int32Extensions
     /// <typeparam name="T">The type of enum.</typeparam>
     /// <param name="value">The int value.</param>
     /// <returns>The converted <see cref="Enum"/> value.</returns>
-    public static T ToEnum<T>(this int value)
+    public static T ToEnum<T>(this int value) where T : struct, Enum
     {
         return (T)Enum.ToObject(typeof(T), value);
     }
@@ -26,8 +26,6 @@ public static class Int32Extensions
     /// <returns>The file size string. eg:MB,GB...</returns>
     public static string ToFileSizeString(this int size)
     {
-        decimal decimalSize = new(size);
-
-        return decimalSize.ToFileSizeString();
+        return ((decimal)size).ToFileSizeString();
     }
 }

@@ -7,51 +7,34 @@ namespace System;
 /// </summary>
 public static class DecimalExtensions
 {
+    private const decimal KB = 1024m;
+    private const decimal MB = KB * 1024m;
+    private const decimal GB = MB * 1024m;
+    private const decimal TB = GB * 1024m;
+    private const decimal PB = TB * 1024m;
+    private const decimal EB = PB * 1024m;
+
     /// <summary>
     /// Convert specified decimal value to a file size string.
     /// <para>Supported:KB MB GB TB PB EB</para>
     /// </summary>
     /// <param name="size">The file size value.</param>
     /// <returns>The file size string. eg:MB,GB...</returns>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="size"/> is negative.</exception>
     public static string ToFileSizeString(this decimal size)
     {
         if (size < 0)
         {
-            throw new ArgumentException("Size must greater or equals than zero.", nameof(size));
+            throw new ArgumentOutOfRangeException(nameof(size), size, "Size must be greater than or equal to zero.");
         }
 
-        if (size < 1024)
-        {
-            return $"{size:F0} bytes";
-        }
+        if (size < KB) return $"{size:F0} bytes";
+        if (size < MB) return $"{size / KB:F0}KB";
+        if (size < GB) return $"{size / MB:F0}MB";
+        if (size < TB) return $"{size / GB:F0}GB";
+        if (size < PB) return $"{size / TB:F0}TB";
+        if (size < EB) return $"{size / PB:F0}PB";
 
-        if (size < Convert.ToDecimal(Math.Pow(1024, 2)))
-        {
-            return $"{size / 1024:F0}KB";
-        }
-
-        if (size < Convert.ToDecimal(Math.Pow(1024, 3)))
-        {
-            return $"{size / Convert.ToDecimal(Math.Pow(1024, 2)):F0}MB";
-        }
-
-        if (size < Convert.ToDecimal(Math.Pow(1024, 4)))
-        {
-            return $"{size / Convert.ToDecimal(Math.Pow(1024, 3)):F0}GB";
-        }
-
-        if (size < Convert.ToDecimal(Math.Pow(1024, 5)))
-        {
-            return $"{size / Convert.ToDecimal(Math.Pow(1024, 4)):F0}TB";
-        }
-
-        decimal threshold = Convert.ToDecimal(Math.Pow(1024, 6));
-
-        if (size < threshold)
-        {
-            return $"{size / Convert.ToDecimal(Math.Pow(1024, 5)):F0}PB";
-        }
-
-        return $"{size / threshold:F0}EB";
+        return $"{size / EB:F0}EB";
     }
 }

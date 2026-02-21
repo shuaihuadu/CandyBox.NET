@@ -46,7 +46,7 @@ public static class Verify
     }
 
     /// <summary>
-    /// Forece the <paramref name="value"/> between the specified value.
+    /// Force the specified <paramref name="value"/> between the specified value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="value">The value.</param>

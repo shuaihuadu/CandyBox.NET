@@ -20,15 +20,8 @@ public static class ICollectionExtensions
     /// </exception>
     public static void AddRange<T>(this ICollection<T> collection, params T[] elements)
     {
-        if (collection.IsNull())
-        {
-            throw new ArgumentNullException(nameof(collection));
-        }
-
-        if (elements.IsNull())
-        {
-            throw new ArgumentNullException(nameof(elements));
-        }
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentNullException.ThrowIfNull(elements);
 
         foreach (T value in elements)
         {

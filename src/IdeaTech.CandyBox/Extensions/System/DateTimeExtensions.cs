@@ -151,7 +151,7 @@ public static class DateTimeExtensions
             dateTime = sqlServerMinDateTime;
         }
 
-        return dateTime!;
+        return dateTime;
     }
 
     /// <summary>
@@ -176,14 +176,16 @@ public static class DateTimeExtensions
     /// <returns>The age.</returns>
     public static int Age(this DateTime dateTime)
     {
-        if (dateTime > DateTime.Now)
+        DateTime now = DateTime.Now;
+
+        if (dateTime > now)
         {
             return 0;
         }
 
-        int age = DateTime.Now.Year - dateTime.Year;
+        int age = now.Year - dateTime.Year;
 
-        if (DateTime.Now < dateTime.AddYears(age))
+        if (now < dateTime.AddYears(age))
         {
             age--;
         }

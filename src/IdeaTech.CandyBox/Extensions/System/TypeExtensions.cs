@@ -14,21 +14,18 @@ public static class TypeExtensions
     /// <returns>A datatable of specified object with no records.</returns>
     public static DataTable GetSchema(this Type type)
     {
-        if (type != null)
+        ArgumentNullException.ThrowIfNull(type);
+
+        DataTable table = new(type.Name);
+
+        PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(type);
+
+        foreach (PropertyDescriptor prop in properties)
         {
-            DataTable table = new(type.Name);
-
-            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(type);
-
-            foreach (PropertyDescriptor prop in properties)
-            {
-                Type t = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                table.Columns.Add(prop.Name, t);
-            }
-
-            return table;
+            Type t = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+            table.Columns.Add(prop.Name, t);
         }
 
-        throw new ArgumentNullException(nameof(type));
+        return table;
     }
 }

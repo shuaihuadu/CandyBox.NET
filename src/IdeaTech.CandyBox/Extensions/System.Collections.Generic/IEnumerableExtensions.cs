@@ -30,7 +30,7 @@ public static class IEnumerableExtensions
             return true;
         }
 
-        return !collection.GetEnumerator().MoveNext();
+        return !collection.Cast<object>().Any();
     }
 
     /// <summary>

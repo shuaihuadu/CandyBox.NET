@@ -214,16 +214,16 @@ public static class ObjectExtensions
 
         if (properties.IsNotNullOrEmpty())
         {
-            innerProperties = obj.GetType().GetProperties().Where(p => properties.Contains(p.Name) && p.PropertyType.Name == nameof(String)).EmptyIfNull().ToArray();
+            innerProperties = [.. obj.GetType().GetProperties().Where(p => properties.Contains(p.Name) && p.PropertyType == typeof(string)).EmptyIfNull()];
         }
         else
         {
-            innerProperties = obj.GetType().GetProperties().Where(p => p.PropertyType.Name == nameof(String)).EmptyIfNull().ToArray();
+            innerProperties = [.. obj.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)).EmptyIfNull()];
         }
 
         foreach (PropertyInfo? property in innerProperties)
         {
-            if (property.IsNotNull() && property.CanWrite && property.PropertyType.Name == nameof(String))
+            if (property.IsNotNull() && property.CanWrite)
             {
                 var value = property.GetValue(obj, null);
 

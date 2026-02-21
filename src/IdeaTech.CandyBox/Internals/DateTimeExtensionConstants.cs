@@ -5,17 +5,17 @@ namespace System.Extensions.Internals;
 internal static class DateTimeExtensionConstants
 {
     /// <summary>
-    /// The datetime format partten.
+    /// The datetime format pattern.
     /// </summary>
     public const string DEFAULT_DATETIME_FORMAT_PARTTEN = "yyyy-MM-dd HH:mm:ss";
 
     /// <summary>
-    /// The datet format partten
+    /// The date format pattern.
     /// </summary>
     public const string DEFAULT_DATE_FORMAT_PARTTEN = "yyyy-MM-dd";
 
     /// <summary>
-    /// The date month format partten
+    /// The date month format pattern.
     /// </summary>
     public const string DEFAULT_DATE_MONTH_FORMAT_PARTTEN = "yyyy-MM";
 

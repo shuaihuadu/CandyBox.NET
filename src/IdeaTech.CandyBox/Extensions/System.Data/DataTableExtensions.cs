@@ -15,6 +15,8 @@ public static class DataTableExtensions
     /// <returns>The markdown table string.</returns>
     public static string ToMarkdownTable(this DataTable dataTable, MarkdownTableContentAlignment alignment = MarkdownTableContentAlignment.Default)
     {
+        ArgumentNullException.ThrowIfNull(dataTable);
+
         if (dataTable.Rows.IsNullOrEmpty() || dataTable.Columns.IsNullOrEmpty())
         {
             return string.Empty;
@@ -53,17 +55,17 @@ public static class DataTableExtensions
 
         for (int i = 0; i < cellCount; i++)
         {
-            string defaultSparator = "---";
+            string defaultSeparator = "---";
 
-            string sparator = alignment switch
+            string separator = alignment switch
             {
-                MarkdownTableContentAlignment.Center => $":{defaultSparator}:",
-                MarkdownTableContentAlignment.Right => $"{defaultSparator}:",
-                MarkdownTableContentAlignment.Left => $":{defaultSparator}",
-                _ => defaultSparator
+                MarkdownTableContentAlignment.Center => $":{defaultSeparator}:",
+                MarkdownTableContentAlignment.Right => $"{defaultSeparator}:",
+                MarkdownTableContentAlignment.Left => $":{defaultSeparator}",
+                _ => defaultSeparator
             };
 
-            separatorBuilder.Append(sparator);
+            separatorBuilder.Append(separator);
             separatorBuilder.Append('|');
         }
 
