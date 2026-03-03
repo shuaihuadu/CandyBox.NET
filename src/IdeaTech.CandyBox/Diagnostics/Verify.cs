@@ -35,9 +35,9 @@ public static class Verify
     /// <param name="collection">The collection.</param>
     /// <param name="paramName">Name of the parameter.</param>
     /// <exception cref="System.ArgumentException">The value cannot be empty.</exception>
-    public static void NotNullOrEmpty<T>(IEnumerable<T>? collection, [CallerArgumentExpression(nameof(collection))] string? paramName = null)
+    public static void NotNullOrEmpty<T>([NotNull] IEnumerable<T>? collection, [CallerArgumentExpression(nameof(collection))] string? paramName = null)
     {
-        NotNull(collection, paramName);
+        ArgumentNullException.ThrowIfNull(collection, paramName);
 
         if (!collection.Any())
         {
